@@ -20,3 +20,5 @@ const TEXT_SMALL = 8.0;
 
 /// App Specific
 const BOT_NAV_HEIGHT = 70.0;
+const CHAT_HISTORY_ITEM_HEIGHT = 85.0;
+const CHAT_HISTORY_ITEM_PROFILE_RADIUS = 35.0;

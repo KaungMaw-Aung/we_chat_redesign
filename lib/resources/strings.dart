@@ -5,3 +5,9 @@ const BOT_NAV_CONTACTS_LABEL = "Contacts";
 const BOT_NAV_DISCOVER_LABEL = "Discover";
 const BOT_NAV_PROFILE_LABEL = "Me";
 
+const SEARCH = "Search";
+const NEW_FRIENDS = "New\nFriends";
+const GROUP_CHATS = "Group\nChats";
+const TAGS = "Tags";
+const OFFICIAL_ACCOUNTS = "Official\nAccounts";
+

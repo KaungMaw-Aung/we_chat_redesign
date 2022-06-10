@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:we_chat_redesign/blocs/discover_bloc.dart';
 import 'package:we_chat_redesign/data/vos/moment_vo.dart';
 
 import '../resources/colors.dart';
@@ -7,16 +9,6 @@ import '../resources/strings.dart';
 import '../viewitems/post_item_view.dart';
 
 class DiscoverPage extends StatelessWidget {
-
-  var dummyMoments = [
-    MomentVO(
-      id: "0",
-      description: "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before final copy is available.",
-      profilePicture: "https://i.pinimg.com/originals/39/e9/b3/39e9b39628e745a39f900dc14ee4d9a7.jpg",
-      username: "Lieven Deprez",
-      postMedia: "https://i0.wp.com/grapevine.is/wp-content/uploads/2021/06/20210519-by-johnpearsonco-sar-at-volcano-site-027-lo-res-027.jpg?fit=1600%2C1067&quality=99&ssl=1",
-    )
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -37,19 +29,26 @@ class DiscoverPage extends StatelessWidget {
           SizedBox(width: MARGIN_MEDIUM),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const MomentProfileView(),
-            ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: dummyMoments.length,
-              itemBuilder: (context, index) {
-                return PostItemView(momentVO: dummyMoments[index]);
-              },
-            ),
-          ],
+      body: ChangeNotifierProvider<DiscoverBloc>(
+        create: (context) => DiscoverBloc(),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const MomentProfileView(),
+              Consumer<DiscoverBloc>(
+                builder: (context, bloc, child) {
+                  return ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: bloc.moments?.length ?? 0,
+                    itemBuilder: (context, index) {
+                      return PostItemView(momentVO: bloc.moments?[index]);
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

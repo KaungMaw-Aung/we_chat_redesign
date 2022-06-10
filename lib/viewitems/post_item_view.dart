@@ -1,4 +1,6 @@
+import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 import 'package:we_chat_redesign/data/vos/moment_vo.dart';
 
 import '../resources/colors.dart';
@@ -162,7 +164,7 @@ class UsernameAndCommentView extends StatelessWidget {
 }
 
 class PostDescriptionMediaLikeCommentAndMoreSectionView
-    extends StatelessWidget {
+    extends StatefulWidget {
   final String? description;
   final String? mediaUrl;
 
@@ -172,37 +174,86 @@ class PostDescriptionMediaLikeCommentAndMoreSectionView
   });
 
   @override
+  State<PostDescriptionMediaLikeCommentAndMoreSectionView> createState() => _PostDescriptionMediaLikeCommentAndMoreSectionViewState();
+}
+
+class _PostDescriptionMediaLikeCommentAndMoreSectionViewState extends State<PostDescriptionMediaLikeCommentAndMoreSectionView> {
+
+  late FlickManager flickManager;
+
+  @override
+  void initState() {
+    flickManager = FlickManager(videoPlayerController: VideoPlayerController.network(widget.mediaUrl ?? ""));
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
       child: Column(
         children: [
           const SizedBox(height: MARGIN_MEDIUM),
-          PostDescriptionView(description: description),
+          PostDescriptionView(description: widget.description),
           const SizedBox(height: MARGIN_MEDIUM_3),
-          Container(
-            height: POST_MEDIA_VIEW_HEIGHT,
-            margin: const EdgeInsets.symmetric(
-              horizontal: MARGIN_CARD_MEDIUM_2,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(
-                MARGIN_MEDIUM,
-              ),
-              image: DecorationImage(
-                image: NetworkImage(
-                  mediaUrl ?? "",
-                ),
-                fit: BoxFit.cover,
-              ),
+          Visibility(
+            visible: widget.mediaUrl?.isNotEmpty == true,
+            child: Column(
+              children: [
+                (getUrlType(widget.mediaUrl ?? "") == UrlType.OTHER)
+                    ? Container(
+                        height: POST_MEDIA_VIEW_HEIGHT,
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: MARGIN_CARD_MEDIUM_2,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(
+                            MARGIN_MEDIUM,
+                          ),
+                          image: DecorationImage(
+                            image: NetworkImage(
+                              widget.mediaUrl ?? "",
+                            ),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      )
+                    : Container(
+                        height: POST_VIDEO_PLAYER_VIEW_HEIGHT,
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: MARGIN_CARD_MEDIUM_2,
+                        ),
+                        child: FlickVideoPlayer(
+                          flickManager: flickManager,
+                        ),
+                      ),
+                const SizedBox(height: MARGIN_CARD_MEDIUM_2),
+              ],
             ),
           ),
-          const SizedBox(height: MARGIN_CARD_MEDIUM_2),
           const LikeCommentAndMoreSectionView(),
           const SizedBox(height: MARGIN_CARD_MEDIUM_2),
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    flickManager.dispose();
+    super.dispose();
+  }
+
+}
+
+enum UrlType { VIDEO, OTHER }
+
+UrlType getUrlType(String url) {
+  Uri uri = Uri.parse(url);
+  if (uri.path.contains(".mp4")) {
+    return UrlType.VIDEO;
+  } else {
+    return UrlType.OTHER;
   }
 }
 
@@ -293,7 +344,7 @@ class PostItemProfileUsernameAndCreatedAtView extends StatelessWidget {
                         "12 mins ago",
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          color: Colors.black26,
+                          color: Colors.black12,
                         ),
                       ),
                     ),

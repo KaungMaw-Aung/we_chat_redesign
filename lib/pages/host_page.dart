@@ -19,7 +19,7 @@ class _HostPageState extends State<HostPage> {
   final List<Widget> mainPages = [
     const HomePage(),
     const ContactsPage(),
-    const DiscoverPage(),
+    DiscoverPage(),
     const ProfilePage(),
   ];
   int currentBottomNavIndex = 0;

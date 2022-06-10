@@ -11,3 +11,5 @@ const GROUP_CHATS = "Group\nChats";
 const TAGS = "Tags";
 const OFFICIAL_ACCOUNTS = "Official\nAccounts";
 
+const MOMENTS = "Moments";
+

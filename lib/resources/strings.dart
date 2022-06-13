@@ -12,4 +12,17 @@ const TAGS = "Tags";
 const OFFICIAL_ACCOUNTS = "Official\nAccounts";
 
 const MOMENTS = "Moments";
+const CREATE_POST = "Create post";
+const POST = "POST";
+const FRIENDS = "Friends";
+const WHAT_IS_ON_YOUR_MIND = "What's on you mind?";
+const PHOTO_VIDEO = "Photo/video";
+const TAG_PEOPLE = "Tag people";
+const FEELING_ACTIVITY = "Feeling/activity";
+const CHECK_IN = "Check in";
+const LIVE_VIDEO = "Live video";
+const BACKGROUND_COLOR = "Background color";
+const CAMERA = "Camera";
+const GIF = "GIF";
+const HOST_Q_AND_A = "Host a Q&A";
 

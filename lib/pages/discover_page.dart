@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat_redesign/blocs/discover_bloc.dart';
-import 'package:we_chat_redesign/data/vos/moment_vo.dart';
+import 'package:we_chat_redesign/utils/extensions.dart';
 
 import '../resources/colors.dart';
 import '../resources/dimens.dart';
 import '../resources/strings.dart';
 import '../viewitems/post_item_view.dart';
+import 'add_or_edit_moment_page.dart';
 
 class DiscoverPage extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,13 +20,17 @@ class DiscoverPage extends StatelessWidget {
           style: TextStyle(color: Colors.white70),
         ),
         centerTitle: true,
-        actions: const [
-          Icon(
-            Icons.camera_alt_outlined,
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.camera_alt_outlined,
+              size: MARGIN_XLARGE,
+            ),
             color: Colors.white70,
-            size: MARGIN_XLARGE,
+            onPressed: () =>
+                navigateToScreen(context, const AddOrEditMomentPage()),
           ),
-          SizedBox(width: MARGIN_MEDIUM),
+          const SizedBox(width: MARGIN_MEDIUM),
         ],
       ),
       body: ChangeNotifierProvider<DiscoverBloc>(
@@ -42,7 +46,12 @@ class DiscoverPage extends StatelessWidget {
                     shrinkWrap: true,
                     itemCount: bloc.moments?.length ?? 0,
                     itemBuilder: (context, index) {
-                      return PostItemView(momentVO: bloc.moments?[index]);
+                      return PostItemView(
+                        momentVO: bloc.moments?[index],
+                        onTapDelete: (momentId) {
+                          bloc.deleteMoment(momentId);
+                        },
+                      );
                     },
                   );
                 },
@@ -54,8 +63,6 @@ class DiscoverPage extends StatelessWidget {
     );
   }
 }
-
-
 
 class MomentProfileView extends StatelessWidget {
   const MomentProfileView({
@@ -72,7 +79,8 @@ class MomentProfileView extends StatelessWidget {
           left: MediaQuery.of(context).size.width * 0.2,
           child: const CircleAvatar(
             backgroundImage: NetworkImage(
-                "https://i.pinimg.com/originals/39/e9/b3/39e9b39628e745a39f900dc14ee4d9a7.jpg"),
+              "https://i.pinimg.com/originals/39/e9/b3/39e9b39628e745a39f900dc14ee4d9a7.jpg",
+            ),
             radius: PROFILE_COVER_IMAGE_RADIUS,
           ),
         ),

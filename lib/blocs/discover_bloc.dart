@@ -22,6 +22,10 @@ class DiscoverBloc extends ChangeNotifier {
 
   }
 
+  void deleteMoment(String momentId) {
+    _model.deleteMoment(momentId);
+  }
+
   @override
   void dispose() {
     super.dispose();

@@ -8,8 +8,12 @@ import '../resources/dimens.dart';
 
 class PostItemView extends StatelessWidget {
   final MomentVO? momentVO;
+  final Function(String) onTapDelete;
 
-  PostItemView({required this.momentVO});
+  PostItemView({
+    required this.momentVO,
+    required this.onTapDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +26,9 @@ class PostItemView extends StatelessWidget {
         PostDescriptionMediaLikeCommentAndMoreSectionView(
           mediaUrl: momentVO?.postMedia,
           description: momentVO?.description,
+          onTapDelete: () {
+            onTapDelete(momentVO?.id ?? "-1");
+          },
         ),
         Container(
           height: MARGIN_MEDIUM,
@@ -163,27 +170,33 @@ class UsernameAndCommentView extends StatelessWidget {
   }
 }
 
-class PostDescriptionMediaLikeCommentAndMoreSectionView
-    extends StatefulWidget {
+class PostDescriptionMediaLikeCommentAndMoreSectionView extends StatefulWidget {
   final String? description;
   final String? mediaUrl;
+  final Function onTapDelete;
 
   PostDescriptionMediaLikeCommentAndMoreSectionView({
     required this.description,
     required this.mediaUrl,
+    required this.onTapDelete,
   });
 
   @override
-  State<PostDescriptionMediaLikeCommentAndMoreSectionView> createState() => _PostDescriptionMediaLikeCommentAndMoreSectionViewState();
+  State<PostDescriptionMediaLikeCommentAndMoreSectionView> createState() =>
+      _PostDescriptionMediaLikeCommentAndMoreSectionViewState();
 }
 
-class _PostDescriptionMediaLikeCommentAndMoreSectionViewState extends State<PostDescriptionMediaLikeCommentAndMoreSectionView> {
-
+class _PostDescriptionMediaLikeCommentAndMoreSectionViewState
+    extends State<PostDescriptionMediaLikeCommentAndMoreSectionView> {
   late FlickManager flickManager;
 
   @override
   void initState() {
-    flickManager = FlickManager(videoPlayerController: VideoPlayerController.network(widget.mediaUrl ?? ""));
+    flickManager = FlickManager(
+      videoPlayerController:
+      VideoPlayerController.network(widget.mediaUrl ?? ""),
+      autoPlay: false,
+    );
     super.initState();
   }
 
@@ -192,6 +205,7 @@ class _PostDescriptionMediaLikeCommentAndMoreSectionViewState extends State<Post
     return Container(
       color: Colors.white,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: MARGIN_MEDIUM),
           PostDescriptionView(description: widget.description),
@@ -231,7 +245,9 @@ class _PostDescriptionMediaLikeCommentAndMoreSectionViewState extends State<Post
               ],
             ),
           ),
-          const LikeCommentAndMoreSectionView(),
+          LikeCommentAndMoreSectionView(
+            onTapDelete: widget.onTapDelete,
+          ),
           const SizedBox(height: MARGIN_CARD_MEDIUM_2),
         ],
       ),
@@ -243,7 +259,6 @@ class _PostDescriptionMediaLikeCommentAndMoreSectionViewState extends State<Post
     flickManager.dispose();
     super.dispose();
   }
-
 }
 
 enum UrlType { VIDEO, OTHER }
@@ -258,33 +273,75 @@ UrlType getUrlType(String url) {
 }
 
 class LikeCommentAndMoreSectionView extends StatelessWidget {
-  const LikeCommentAndMoreSectionView({
-    Key? key,
-  }) : super(key: key);
+  final Function onTapDelete;
+
+  LikeCommentAndMoreSectionView({required this.onTapDelete});
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: const [
-        Spacer(),
-        Icon(
-          Icons.favorite_outline,
-          color: Colors.black38,
-          size: MARGIN_XLARGE,
+      children: [
+        const Spacer(),
+        IconButton(
+          icon: const Icon(
+            Icons.favorite_outline,
+            color: Colors.black38,
+            size: MARGIN_XLARGE,
+          ),
+          onPressed: () {},
         ),
-        SizedBox(width: MARGIN_CARD_MEDIUM_2),
-        Icon(
-          Icons.messenger_outline,
-          color: Colors.black38,
-          size: MARGIN_XLARGE,
+        const SizedBox(width: MARGIN_SMALL),
+        IconButton(
+          icon: const Icon(
+            Icons.messenger_outline,
+            color: Colors.black38,
+            size: MARGIN_XLARGE,
+          ),
+          onPressed: () {},
         ),
-        SizedBox(width: MARGIN_CARD_MEDIUM_2),
-        Icon(
-          Icons.more_horiz_outlined,
-          color: Colors.black38,
-          size: MARGIN_XLARGE,
+        const SizedBox(width: MARGIN_SMALL),
+        MoreButtonView(
+          onTapEdit: () {},
+          onTapDelete: () => onTapDelete(),
         ),
-        SizedBox(width: MARGIN_LARGE),
+        const SizedBox(width: MARGIN_LARGE),
+      ],
+    );
+  }
+}
+
+class MoreButtonView extends StatelessWidget {
+  final Function onTapDelete;
+  final Function onTapEdit;
+
+  MoreButtonView({
+    required this.onTapDelete,
+    required this.onTapEdit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton(
+      icon: const Icon(
+        Icons.more_horiz,
+        color: Colors.black38,
+        size: MARGIN_XLARGE,
+      ),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          onTap: () {
+            onTapEdit();
+          },
+          child: const Text("Edit"),
+          value: 1,
+        ),
+        PopupMenuItem(
+          onTap: () {
+            onTapDelete();
+          },
+          child: const Text("Delete"),
+          value: 2,
+        )
       ],
     );
   }

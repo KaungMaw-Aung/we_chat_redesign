@@ -16,7 +16,9 @@ import '../resources/strings.dart';
 import '../viewitems/post_item_view.dart';
 
 class AddOrEditMomentPage extends StatefulWidget {
-  const AddOrEditMomentPage({Key? key}) : super(key: key);
+  final String? momentId;
+
+  AddOrEditMomentPage({this.momentId});
 
   @override
   State<AddOrEditMomentPage> createState() => _AddOrEditMomentPageState();
@@ -26,15 +28,10 @@ class _AddOrEditMomentPageState extends State<AddOrEditMomentPage> {
   late FlickManager _flickManager;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: ChangeNotifierProvider<AddNewMomentBloc>(
-        create: (context) => AddNewMomentBloc(),
+        create: (context) => AddNewMomentBloc(momentId: widget.momentId),
         child: SafeArea(
           child: Stack(
             children: [
@@ -53,7 +50,7 @@ class _AddOrEditMomentPageState extends State<AddOrEditMomentPage> {
                             );
                             bloc
                                 .onTapPostButton()
-                                .then((value) => Navigator.pop(context));
+                                .then((value) => Navigator.pop(context, true));
                           },
                         );
                       },
@@ -70,34 +67,42 @@ class _AddOrEditMomentPageState extends State<AddOrEditMomentPage> {
                       ),
                       child: Builder(
                         builder: (BuildContext context) {
-                          return TextField(
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              hintText: WHAT_IS_ON_YOUR_MIND,
-                              hintStyle: TextStyle(
-                                fontSize: TEXT_REGULAR_3X,
-                                color: Colors.black38,
-                              ),
-                            ),
-                            onChanged: (input) {
-                              AddNewMomentBloc bloc =
-                                  Provider.of(context, listen: false);
-                              bloc.onDescriptionChanged(input);
+                          return Selector<AddNewMomentBloc, String>(
+                            builder: (context, description, child) {
+                              return TextField(
+                                controller:
+                                    TextEditingController(text: description),
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: WHAT_IS_ON_YOUR_MIND,
+                                  hintStyle: TextStyle(
+                                    fontSize: TEXT_REGULAR_3X,
+                                    color: Colors.black38,
+                                  ),
+                                ),
+                                onChanged: (input) {
+                                  AddNewMomentBloc bloc =
+                                      Provider.of(context, listen: false);
+                                  bloc.onDescriptionChanged(input);
+                                },
+                                cursorWidth: 0.8,
+                                cursorHeight: MARGIN_MEDIUM_3,
+                              );
                             },
-                            cursorWidth: 0.8,
-                            cursorHeight: MARGIN_MEDIUM_3,
+                            selector: (context, bloc) => bloc.momentDescription,
                           );
                         },
                       ),
                     ),
-                    Selector<AddNewMomentBloc, File?>(
-                      selector: (context, bloc) => bloc.chosenMedia,
-                      builder: (context, chosenMedia, child) {
+                    Consumer<AddNewMomentBloc>(
+                      builder: (context, bloc, child) {
                         return Visibility(
-                          visible: chosenMedia != null,
+                          visible: bloc.chosenMedia != null ||
+                              (bloc.loadedMediaUrl?.isNotEmpty == true),
                           child: Column(
                             children: [
-                              (getUrlType(chosenMedia?.uri.path ?? "") ==
+                              (getUrlType(bloc.chosenMedia?.uri.path ??
+                                          (bloc.loadedMediaUrl ?? "")) ==
                                       UrlType.OTHER)
                                   ? Stack(
                                       children: [
@@ -111,9 +116,16 @@ class _AddOrEditMomentPageState extends State<AddOrEditMomentPage> {
                                               MARGIN_MEDIUM,
                                             ),
                                             image: DecorationImage(
-                                              image: FileImage(
-                                                chosenMedia ?? File(""),
-                                              ),
+                                              image: (bloc.loadedMediaUrl
+                                                          ?.isNotEmpty ==
+                                                      true)
+                                                  ? NetworkImage(
+                                                      bloc.loadedMediaUrl ??
+                                                          "") as ImageProvider
+                                                  : FileImage(
+                                                      bloc.chosenMedia ??
+                                                          File(""),
+                                                    ),
                                               fit: BoxFit.cover,
                                             ),
                                           ),
@@ -122,7 +134,9 @@ class _AddOrEditMomentPageState extends State<AddOrEditMomentPage> {
                                           right: MARGIN_SMALL,
                                           child: IconButton(
                                             onPressed: () {
-                                              AddNewMomentBloc bloc = Provider.of(context, listen: false);
+                                              AddNewMomentBloc bloc =
+                                                  Provider.of(context,
+                                                      listen: false);
                                               bloc.onDeleteMedia();
                                             },
                                             icon: const Icon(
@@ -135,37 +149,41 @@ class _AddOrEditMomentPageState extends State<AddOrEditMomentPage> {
                                       ],
                                     )
                                   : Stack(
-                                    children: [
-                                      Container(
-                                        height: POST_VIDEO_PLAYER_VIEW_HEIGHT,
-                                        margin: const EdgeInsets.symmetric(
-                                          horizontal: MARGIN_CARD_MEDIUM_2,
-                                        ),
-                                        child: (chosenMedia != null)
-                                            ? FlickVideoPlayer(
-                                          flickManager:
-                                          initializeFlickManager(
-                                            chosenMedia,
+                                      children: [
+                                        Container(
+                                          height: POST_VIDEO_PLAYER_VIEW_HEIGHT,
+                                          margin: const EdgeInsets.symmetric(
+                                            horizontal: MARGIN_CARD_MEDIUM_2,
                                           ),
-                                        )
-                                            : null,
-                                      ),
-                                      Positioned(
-                                        right: MARGIN_SMALL,
-                                        child: IconButton(
-                                          onPressed: () {
-                                            AddNewMomentBloc bloc = Provider.of(context, listen: false);
-                                            bloc.onDeleteMedia();
-                                          },
-                                          icon: const Icon(
-                                            Icons.delete_forever,
-                                            color: Colors.red,
-                                            size: MARGIN_XLARGE,
+                                          child: FlickVideoPlayer(
+                                            flickManager: (bloc.loadedMediaUrl
+                                                        ?.isNotEmpty ==
+                                                    true)
+                                                ? initializeFlickManagerWithUrl(
+                                                    bloc.loadedMediaUrl ?? "")
+                                                : initializeFlickManagerWithFile(
+                                                    bloc.chosenMedia ??
+                                                        File("")),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
+                                        Positioned(
+                                          right: MARGIN_SMALL,
+                                          child: IconButton(
+                                            onPressed: () {
+                                              AddNewMomentBloc bloc =
+                                                  Provider.of(context,
+                                                      listen: false);
+                                              bloc.onDeleteMedia();
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete_forever,
+                                              color: Colors.red,
+                                              size: MARGIN_XLARGE,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                               const SizedBox(height: MARGIN_CARD_MEDIUM_2),
                             ],
                           ),
@@ -214,11 +232,26 @@ class _AddOrEditMomentPageState extends State<AddOrEditMomentPage> {
     );
   }
 
-  FlickManager initializeFlickManager(File chosenVideoFile) {
-    return _flickManager = FlickManager(
+  @override
+  void dispose() {
+    _flickManager.dispose();
+    super.dispose();
+  }
+
+  FlickManager initializeFlickManagerWithFile(File chosenVideoFile) {
+    _flickManager = FlickManager(
       videoPlayerController: VideoPlayerController.file(chosenVideoFile),
       autoPlay: false,
     );
+    return _flickManager;
+  }
+
+  FlickManager initializeFlickManagerWithUrl(String videoUrl) {
+    _flickManager = FlickManager(
+      videoPlayerController: VideoPlayerController.network(videoUrl),
+      autoPlay: false,
+    );
+    return _flickManager;
   }
 }
 

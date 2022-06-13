@@ -27,8 +27,7 @@ class DiscoverPage extends StatelessWidget {
               size: MARGIN_XLARGE,
             ),
             color: Colors.white70,
-            onPressed: () =>
-                navigateToScreen(context, const AddOrEditMomentPage()),
+            onPressed: () => navigateToScreen(context, AddOrEditMomentPage()),
           ),
           const SizedBox(width: MARGIN_MEDIUM),
         ],
@@ -50,6 +49,15 @@ class DiscoverPage extends StatelessWidget {
                         momentVO: bloc.moments?[index],
                         onTapDelete: (momentId) {
                           bloc.deleteMoment(momentId);
+                        },
+                        onTapEdit: (momentId) {
+                          Future.delayed(const Duration(milliseconds: 1000))
+                              .then((value) {
+                            navigateToScreen(
+                              context,
+                              AddOrEditMomentPage(momentId: momentId),
+                            );
+                          });
                         },
                       );
                     },

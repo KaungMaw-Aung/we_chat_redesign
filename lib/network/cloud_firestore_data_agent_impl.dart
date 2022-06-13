@@ -57,4 +57,16 @@ class CloudFirestoreDataAgentImpl extends WeChatDataAgent {
   String getFileExtension(String url) {
     return getUrlType(url) == UrlType.OTHER ? ".jpg" : ".mp4";
   }
+
+  @override
+  Stream<MomentVO> getMomentById(String momentId) {
+    return _cloudFirestore
+        .collection(momentsCollection)
+        .doc(momentId)
+        .get()
+        .asStream()
+        .where((event) => event.data() != null)
+        .map((event) => MomentVO.fromJson(event.data()!));
+
+  }
 }

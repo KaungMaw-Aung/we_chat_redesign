@@ -31,4 +31,22 @@ class MomentVO {
 
   Map<String, dynamic> toJson() => _$MomentVOToJson(this);
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MomentVO &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          description == other.description &&
+          profilePicture == other.profilePicture &&
+          username == other.username &&
+          postMedia == other.postMedia;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      description.hashCode ^
+      profilePicture.hashCode ^
+      username.hashCode ^
+      postMedia.hashCode;
 }

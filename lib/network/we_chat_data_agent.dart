@@ -8,6 +8,7 @@ abstract class WeChatDataAgent {
   Stream<List<MomentVO>> getMoments();
   Future<void> addNewMoment(MomentVO moment);
   Future<void> deleteMoment(String momentId);
+  Stream<MomentVO> getMomentById(String momentId);
 
   /// Storage
   Future<String> uploadFileToStorage(File chosenMedia);

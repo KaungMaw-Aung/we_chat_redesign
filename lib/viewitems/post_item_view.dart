@@ -9,10 +9,12 @@ import '../resources/dimens.dart';
 class PostItemView extends StatelessWidget {
   final MomentVO? momentVO;
   final Function(String) onTapDelete;
+  final Function(String) onTapEdit;
 
   PostItemView({
     required this.momentVO,
     required this.onTapDelete,
+    required this.onTapEdit,
   });
 
   @override
@@ -28,6 +30,9 @@ class PostItemView extends StatelessWidget {
           description: momentVO?.description,
           onTapDelete: () {
             onTapDelete(momentVO?.id ?? "-1");
+          },
+          onTapEdit: () {
+            onTapEdit(momentVO?.id ?? "-1");
           },
         ),
         Container(
@@ -174,11 +179,13 @@ class PostDescriptionMediaLikeCommentAndMoreSectionView extends StatefulWidget {
   final String? description;
   final String? mediaUrl;
   final Function onTapDelete;
+  final Function onTapEdit;
 
   PostDescriptionMediaLikeCommentAndMoreSectionView({
     required this.description,
     required this.mediaUrl,
     required this.onTapDelete,
+    required this.onTapEdit,
   });
 
   @override
@@ -194,7 +201,7 @@ class _PostDescriptionMediaLikeCommentAndMoreSectionViewState
   void initState() {
     flickManager = FlickManager(
       videoPlayerController:
-      VideoPlayerController.network(widget.mediaUrl ?? ""),
+          VideoPlayerController.network(widget.mediaUrl ?? ""),
       autoPlay: false,
     );
     super.initState();
@@ -247,6 +254,7 @@ class _PostDescriptionMediaLikeCommentAndMoreSectionViewState
           ),
           LikeCommentAndMoreSectionView(
             onTapDelete: widget.onTapDelete,
+            onTapEdit: widget.onTapEdit,
           ),
           const SizedBox(height: MARGIN_CARD_MEDIUM_2),
         ],
@@ -274,8 +282,12 @@ UrlType getUrlType(String url) {
 
 class LikeCommentAndMoreSectionView extends StatelessWidget {
   final Function onTapDelete;
+  final Function onTapEdit;
 
-  LikeCommentAndMoreSectionView({required this.onTapDelete});
+  LikeCommentAndMoreSectionView({
+    required this.onTapDelete,
+    required this.onTapEdit,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -301,8 +313,8 @@ class LikeCommentAndMoreSectionView extends StatelessWidget {
         ),
         const SizedBox(width: MARGIN_SMALL),
         MoreButtonView(
-          onTapEdit: () {},
-          onTapDelete: () => onTapDelete(),
+          onTapEdit: onTapEdit,
+          onTapDelete: onTapDelete,
         ),
         const SizedBox(width: MARGIN_LARGE),
       ],
@@ -332,15 +344,15 @@ class MoreButtonView extends StatelessWidget {
           onTap: () {
             onTapEdit();
           },
-          child: const Text("Edit"),
           value: 1,
+          child: const Text("Edit"),
         ),
         PopupMenuItem(
           onTap: () {
             onTapDelete();
           },
-          child: const Text("Delete"),
           value: 2,
+          child: const Text("Delete"),
         )
       ],
     );

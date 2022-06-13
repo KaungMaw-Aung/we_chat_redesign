@@ -45,4 +45,31 @@ class WeChatModelImpl extends WeChatModel {
   Future<void> deleteMoment(String momentId) {
     return _dataAgent.deleteMoment(momentId);
   }
+
+  @override
+  Stream<MomentVO> getMomentById(String momentId) {
+    return _dataAgent.getMomentById(momentId);
+  }
+
+  @override
+  Future<void> editMoment(MomentVO? moment, File? chosenMedia) {
+    if (chosenMedia != null) {
+      return _dataAgent.uploadFileToStorage(chosenMedia).then((downloadUrl) {
+        moment?.postMedia = downloadUrl;
+        return moment;
+      }).then((value) {
+        if (value != null) {
+          _dataAgent.addNewMoment(value);
+        } else {
+          return Future.error("Error");
+        }
+      });
+    } else {
+      if (moment != null) {
+        return _dataAgent.addNewMoment(moment);
+      } else {
+        return Future.error("Error");
+      }
+    }
+  }
 }

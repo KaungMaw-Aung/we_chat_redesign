@@ -6,6 +6,7 @@ import '../resources/colors.dart';
 import '../resources/dimens.dart';
 import '../resources/strings.dart';
 import '../viewitems/contact_item_view.dart';
+import '../widgets/contacts_feature_item_view.dart';
 import '../widgets/horizontal_divider_view.dart';
 
 class ContactsPage extends StatefulWidget {
@@ -265,45 +266,8 @@ class ContactsFeaturesBarView extends StatelessWidget {
         Container(
           height: MARGIN_MEDIUM,
           color: SEARCH_BAR_BACKGROUND_COLOR,
-        )
-      ],
-    );
-  }
-}
-
-class ContactsFeatureItemView extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  ContactsFeatureItemView({
-    required this.icon,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: Colors.black38,
-              size: MARGIN_XLARGE,
-            ),
-            const SizedBox(height: MARGIN_MEDIUM),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.black38,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
         ),
-      ),
+      ],
     );
   }
 }

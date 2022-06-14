@@ -25,4 +25,11 @@ const BACKGROUND_COLOR = "Background color";
 const CAMERA = "Camera";
 const GIF = "GIF";
 const HOST_Q_AND_A = "Host a Q&A";
+const PHOTOS = "Photos";
+const FAVORITES = "Favorites";
+const WALLET = "Wallet";
+const CARDS = "Cards";
+const STICKERS = "Stickers";
+const SETTINGS = "Settings";
+const LOGOUT = "Log Out";
 

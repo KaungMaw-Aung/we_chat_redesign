@@ -50,7 +50,7 @@ class _AddOrEditMomentPageState extends State<AddOrEditMomentPage> {
                             );
                             bloc
                                 .onTapPostButton()
-                                .then((value) => Navigator.pop(context, true));
+                                .then((value) => Navigator.pop(context));
                           },
                         );
                       },

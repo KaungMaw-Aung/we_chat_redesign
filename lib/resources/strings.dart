@@ -32,4 +32,12 @@ const CARDS = "Cards";
 const STICKERS = "Stickers";
 const SETTINGS = "Settings";
 const LOGOUT = "Log Out";
+const CHAT_BOX_TEXT_FIELD_HINT = "Message...";
+
+const SIGHT = "Sight";
+const VIDEO_CALL = "Video Call";
+const LUCK_MONEY = "Luck Money";
+const TRANSFER = "Transfer";
+const LOCATION = "Location";
+
 

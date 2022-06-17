@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:we_chat_redesign/pages/email_verification_page.dart';
 import 'package:we_chat_redesign/pages/login_or_sign_up_page.dart';
+import 'package:we_chat_redesign/pages/privacy_policy_page.dart';
 
 import 'pages/host_page.dart';
 

@@ -1,36 +1,38 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:we_chat_redesign/data/models/authentication_model_impl.dart';
-import 'package:we_chat_redesign/data/vos/user_vo.dart';
 
 import '../data/models/authentication_model.dart';
 
-class EmailVerificationBloc extends ChangeNotifier {
+class LoginBloc extends ChangeNotifier {
+
   /// State Variables
   bool isDisposed = false;
-  bool isOkButtonEnable = false;
+  bool isLoginButtonEnable = false;
   bool isLoading = false;
 
   /// Page Data
   String email = "";
+  String password = "";
 
   /// Models
-  final AuthenticationModel _authenticationModel = AuthenticationModelImpl();
+  final AuthenticationModel _authModel = AuthenticationModelImpl();
 
-  void onChangeEmail(String email) {
-    this.email = email;
-    isOkButtonEnable = this.email.isNotEmpty;
+  void onEmailTextChange(String text) {
+    email = text;
+    isLoginButtonEnable = (email.isNotEmpty && password.isNotEmpty);
     safelyNotifyListeners();
   }
 
-  Future<void> onTapConfirmButton(UserVO newUser, File? profileImageFile) {
+  void onPasswordTextChange(String text) {
+    password = text;
+    isLoginButtonEnable = (email.isNotEmpty && password.isNotEmpty);
+    safelyNotifyListeners();
+  }
+
+  Future<void> onTapLogin() {
     isLoading = true;
     safelyNotifyListeners();
-    newUser.email = email;
-    return _authenticationModel
-        .registerNewUser(newUser, profileImageFile)
-        .whenComplete(() {
+    return _authModel.login(email, password).whenComplete(() {
       isLoading = false;
       safelyNotifyListeners();
     });

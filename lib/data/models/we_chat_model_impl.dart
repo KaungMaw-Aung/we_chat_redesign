@@ -7,6 +7,13 @@ import 'package:we_chat_redesign/network/cloud_firestore_data_agent_impl.dart';
 import '../../network/we_chat_data_agent.dart';
 
 class WeChatModelImpl extends WeChatModel {
+
+  static final WeChatModelImpl _singleton = WeChatModelImpl._internal();
+
+  factory WeChatModelImpl() => _singleton;
+
+  WeChatModelImpl._internal();
+
   /// DataAgent
   final WeChatDataAgent _dataAgent = CloudFirestoreDataAgentImpl();
 

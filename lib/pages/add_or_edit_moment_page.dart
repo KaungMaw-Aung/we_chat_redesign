@@ -14,6 +14,7 @@ import 'package:we_chat_redesign/widgets/horizontal_divider_view.dart';
 import '../resources/colors.dart';
 import '../resources/strings.dart';
 import '../viewitems/post_item_view.dart';
+import '../widgets/loading_view.dart';
 
 class AddOrEditMomentPage extends StatefulWidget {
   final String? momentId;
@@ -252,32 +253,6 @@ class _AddOrEditMomentPageState extends State<AddOrEditMomentPage> {
       autoPlay: false,
     );
     return _flickManager;
-  }
-}
-
-class LoadingView extends StatelessWidget {
-  const LoadingView({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black12,
-      child: const Center(
-        child: SizedBox(
-          width: MARGIN_XXLARGE,
-          height: MARGIN_XXLARGE,
-          child: LoadingIndicator(
-            indicatorType: Indicator.orbit,
-            colors: [Colors.white],
-            strokeWidth: 2,
-            backgroundColor: Colors.transparent,
-            pathBackgroundColor: Colors.black,
-          ),
-        ),
-      ),
-    );
   }
 }
 

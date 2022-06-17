@@ -5,6 +5,7 @@ import 'package:we_chat_redesign/utils/extensions.dart';
 
 import '../resources/colors.dart';
 import '../resources/strings.dart';
+import 'login_page.dart';
 
 class LoginOrSignUpPage extends StatelessWidget {
   const LoginOrSignUpPage({Key? key}) : super(key: key);
@@ -28,7 +29,9 @@ class LoginOrSignUpPage extends StatelessWidget {
               ),
               child: LoginAndSignUpButtonsView(
                 onTapSignUp: () => showBottomSheet(context),
-                onTapLogin: () {},
+                onTapLogin: () {
+                  navigateToScreen(context, const LoginPage());
+                },
               ),
             ),
           ),

@@ -66,3 +66,5 @@ const ENTER_VERIFICATION_INFO = "Enter verification information";
 const ENTER_EMAIL_ADDRESS = "Enter email address";
 const OK = "OK";
 const EMAIL = "Email";
+const ENTER_EMAIL = "Enter email";
+const ENTER_PASSWORD = "Enter password";

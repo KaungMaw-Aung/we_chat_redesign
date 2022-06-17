@@ -12,6 +12,7 @@ UserVO _$UserVOFromJson(Map<String, dynamic> json) => UserVO(
       email: json['email'] as String?,
       phoneNumber: json['phone_number'] as String?,
       profilePicture: json['profile_picture'] as String?,
+      password: json['password'] as String?,
       qrCode: json['qr_code'] as String?,
       fcmToken: json['fcm_token'] as String?,
     );
@@ -22,6 +23,7 @@ Map<String, dynamic> _$UserVOToJson(UserVO instance) => <String, dynamic>{
       'email': instance.email,
       'phone_number': instance.phoneNumber,
       'profile_picture': instance.profilePicture,
+      'password': instance.password,
       'qr_code': instance.qrCode,
       'fcm_token': instance.fcmToken,
     };

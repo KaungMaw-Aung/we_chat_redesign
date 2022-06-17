@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:we_chat_redesign/blocs/profile_bloc.dart';
 import 'package:we_chat_redesign/resources/colors.dart';
+import 'package:we_chat_redesign/utils/extensions.dart';
 
 import '../resources/dimens.dart';
 import '../resources/strings.dart';
 import '../widgets/contacts_feature_item_view.dart';
 import '../widgets/vertical_divider_view.dart';
+import 'login_or_sign_up_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -13,23 +17,40 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: PRIMARY_COLOR,
-      body: SafeArea(
-        child: Column(
-          children: [
-            const SizedBox(
-              height: USER_PROFILE_TOP_BACKGROUND_HEIGHT,
-              child: UserProfileSectionView(),
-            ),
-            const ProfileFeaturesSectionView(),
-            Expanded(
-              child: Container(
-                color: CONTACT_TOP_BAR_BACKGROUND_COLOR,
-                child: const Center(
-                  child: LogoutButtonView(),
-                ),
-              ),
-            ),
-          ],
+      body: ChangeNotifierProvider<ProfileBloc>(
+        create: (context) => ProfileBloc(),
+        child: SafeArea(
+          child: Consumer<ProfileBloc>(
+            builder: (context, bloc, child) {
+              return Column(
+                children: [
+                  SizedBox(
+                    height: USER_PROFILE_TOP_BACKGROUND_HEIGHT,
+                    child: UserProfileSectionView(
+                      name: bloc.name,
+                      profileUrl: bloc.profileUrl,
+                    ),
+                  ),
+                  const ProfileFeaturesSectionView(),
+                  Expanded(
+                    child: Container(
+                      color: CONTACT_TOP_BAR_BACKGROUND_COLOR,
+                      child: Center(
+                        child: LogoutButtonView(
+                          onTapLogout: () {
+                            bloc.logout().then((_) {
+                              navigateToScreen(
+                                context, const LoginOrSignUpPage(),);
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -37,25 +58,31 @@ class ProfilePage extends StatelessWidget {
 }
 
 class LogoutButtonView extends StatelessWidget {
-  const LogoutButtonView({
-    Key? key,
-  }) : super(key: key);
+  final Function onTapLogout;
+
+  LogoutButtonView({required this.onTapLogout});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.5,
-      height: MARGIN_XXLARGE,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(MARGIN_LARGE),
-      ),
-      child: const Center(
-        child: Text(
-          LOGOUT,
-          style: TextStyle(
-            fontSize: MARGIN_MEDIUM_3,
-            fontWeight: FontWeight.w500,
+    return GestureDetector(
+      onTap: () => onTapLogout(),
+      child: Container(
+        width: MediaQuery
+            .of(context)
+            .size
+            .width * 0.5,
+        height: MARGIN_XXLARGE,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(MARGIN_LARGE),
+        ),
+        child: const Center(
+          child: Text(
+            LOGOUT,
+            style: TextStyle(
+              fontSize: MARGIN_MEDIUM_3,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
       ),
@@ -126,9 +153,13 @@ class ProfileFeaturesSectionView extends StatelessWidget {
 }
 
 class UserProfileSectionView extends StatelessWidget {
-  const UserProfileSectionView({
-    Key? key,
-  }) : super(key: key);
+  final String? name;
+  final String? profileUrl;
+
+  UserProfileSectionView({
+    required this.name,
+    required this.profileUrl,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -137,9 +168,9 @@ class UserProfileSectionView extends StatelessWidget {
         SizedBox(
           height: USER_PROFILE_TOP_BACKGROUND_HEIGHT,
           child: Column(
-            children: const [
-              NameAndQRScanButtonView(),
-              UserMottoView(),
+            children: [
+              NameAndQRScanButtonView(name: name),
+              const UserMottoView(),
             ],
           ),
         ),
@@ -153,10 +184,10 @@ class UserProfileSectionView extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(USER_PROFILE_SIZE * 0.5),
             ),
-            child: const CircleAvatar(
+            child: CircleAvatar(
               radius: USER_PROFILE_SIZE * 0.5,
               backgroundImage: NetworkImage(
-                "https://images.pexels.com/photos/3031397/pexels-photo-3031397.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+                profileUrl ?? "",
               ),
             ),
           ),
@@ -200,9 +231,9 @@ class UserMottoView extends StatelessWidget {
 }
 
 class NameAndQRScanButtonView extends StatelessWidget {
-  const NameAndQRScanButtonView({
-    Key? key,
-  }) : super(key: key);
+  final String? name;
+
+  NameAndQRScanButtonView({required this.name});
 
   @override
   Widget build(BuildContext context) {
@@ -211,15 +242,15 @@ class NameAndQRScanButtonView extends StatelessWidget {
         color: PRIMARY_COLOR,
         child: Stack(
           children: [
-            const Align(
+            Align(
               alignment: Alignment.topCenter,
               child: Padding(
-                padding: EdgeInsets.only(
+                padding: const EdgeInsets.only(
                   top: MARGIN_MEDIUM_2,
                 ),
                 child: Text(
-                  "Kaung Maw Aung",
-                  style: TextStyle(
+                  name ?? "",
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: TEXT_REGULAR_3X,
                   ),

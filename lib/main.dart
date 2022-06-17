@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:we_chat_redesign/pages/login_or_sign_up_page.dart';
 
 import 'pages/host_page.dart';
 
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HostPage(),
+      home: const LoginOrSignUpPage(),
     );
   }
 }

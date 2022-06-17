@@ -40,4 +40,21 @@ const LUCK_MONEY = "Luck Money";
 const TRANSFER = "Transfer";
 const LOCATION = "Location";
 
-
+const LOGIN = "Log In";
+const SIGN_UP = "Sign Up";
+const SELECT_SIGN_UP_METHOD = "Select Sign Up Method";
+const SIGN_UP_WITH_MOBILE = "Sign Up with Mobile";
+const SIGN_UP_WITH_APPLE = "Sign Up with Apple";
+const SIGN_UP_WITH_FACEBOOK = "Sign Up with Facebook";
+const OR = "or";
+const TAKE_PHOTO = "Take Photo";
+const CHOOSE_FROM_ALBUM = "Choose from Album";
+const CANCEL = "Cancel";
+const FULL_NAME = "Full Name";
+const ENTER_ALIAS = "Enter alias";
+const REGION = "Region";
+const PHONE = "Phone";
+const PASSWORD = "Password";
+const HAVED_READ_TERMS = "I have read and accept the Terms of Service";
+const TOOK_INFO_WARNING = "The information collected on this page is only used for account registration";
+const ACCEPT_AND_CONTINUE = "Accept and Continue";

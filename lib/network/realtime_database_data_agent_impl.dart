@@ -16,9 +16,6 @@ class RealtimeDatabaseDataAgentImpl extends ContactsAndMessagesDataAgent {
   /// Realtime Database
   var databaseRef = FirebaseDatabase.instance.ref();
 
-  /// Storage
-  var firebaseStorage = FirebaseStorage.instance;
-
   @override
   Future<void> addMessageToContacts(
     String senderId,
@@ -37,6 +34,21 @@ class RealtimeDatabaseDataAgentImpl extends ContactsAndMessagesDataAgent {
           .child(senderId)
           .child(message.sentAt?.toString() ?? "")
           .set(message.toJson());
+    });
+  }
+
+  @override
+  Stream<List<MessageVO>> getMessages(String senderId, String receiverId) {
+    return databaseRef
+        .child(contactsAndMessagesPath)
+        .child(senderId)
+        .child(receiverId)
+        .onValue
+        .map((event) {
+      return event.snapshot.children.map<MessageVO>((element) {
+        return MessageVO.fromJson(
+            Map<String, dynamic>.from(element.value as Map));
+      }).toList();
     });
   }
 }

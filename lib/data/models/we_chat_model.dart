@@ -35,4 +35,6 @@ abstract class WeChatModel {
     File? media,
     String message,
   );
+
+  Stream<List<MessageVO>> getMessages(String senderId, String receiverId);
 }

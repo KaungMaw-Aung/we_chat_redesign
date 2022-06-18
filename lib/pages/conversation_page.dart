@@ -19,60 +19,23 @@ class ConversationPage extends StatelessWidget {
   final String currentUserId;
   final String receiverId;
   final String receiverProfileUrl;
+  final String receiverName;
 
   ConversationPage({
     required this.currentUserId,
     required this.receiverId,
     required this.receiverProfileUrl,
+    required this.receiverName,
   });
-
-  /// Dummy Chat History
-  /*var dummyChatHistory = [
-    MessageVO(
-      "https://i.pinimg.com/originals/39/e9/b3/39e9b39628e745a39f900dc14ee4d9a7.jpg",
-      "John",
-      "n publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content.",
-      "https://www.uncovercolorado.com/wp-content/uploads/2020/08/pleasant-view-colorado-sign-highway491-1600x800-1-1600x800.jpeg",
-      "3:21 PM",
-    ),
-    MessageVO(
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cG9ydHJhaXR8ZW58MHx8MHx8&w=1000&q=80",
-      "Tester",
-      "n publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content.",
-      "",
-      "3:21 PM",
-    ),
-    MessageVO(
-      "https://i.pinimg.com/originals/39/e9/b3/39e9b39628e745a39f900dc14ee4d9a7.jpg",
-      "John",
-      "",
-      "https://firebasestorage.googleapis.com/v0/b/wechat-932d4.appspot.com/o/uploads%2F1655353067845.mp4?alt=media&token=6d12e7c5-45d5-4356-9451-e2f779b3a31f",
-      "3:21 PM",
-    ),
-    MessageVO(
-      "https://img.freepik.com/free-photo/dreamy-young-woman-sunglasses-looking-front_197531-16739.jpg?w=2000",
-      "Blah Blah",
-      "n publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content.",
-      "",
-      "3:21 PM",
-    ),
-    MessageVO(
-      "https://i.pinimg.com/originals/39/e9/b3/39e9b39628e745a39f900dc14ee4d9a7.jpg",
-      "John",
-      "n publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content.",
-      "",
-      "3:21 PM",
-    ),
-  ];*/
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: PRIMARY_COLOR,
-        title: const Text(
-          "Other User",
-          style: TextStyle(color: Colors.white70),
+        title: Text(
+          receiverName,
+          style: const TextStyle(color: Colors.white70),
         ),
         centerTitle: true,
         leadingWidth: 100,
@@ -105,61 +68,46 @@ class ConversationPage extends StatelessWidget {
         ],
       ),
       body: ChangeNotifierProvider<ConversationBloc>(
-        create: (context) => ConversationBloc(),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            VerticalChatMessagesListView(
-              dummyChatHistory: null,
-            ),
-            Selector<ConversationBloc, bool>(
-              selector: (context, bloc) => bloc.isChatFeaturesShown,
-              builder: (context, isChatFeaturesShown, child) {
-                return Selector<ConversationBloc, File?>(
-                  selector: (context, bloc) => bloc.chosenMedia,
-                  builder: (context, chosenMedia, child) {
-                    return Selector<ConversationBloc, bool>(
-                      selector: (context, bloc) => bloc.isMessageSent,
-                      builder: (context, isMessageSent, child) {
-                        return ChatInputBoxWithFeaturesSectionView(
-                          isExpanded: isChatFeaturesShown,
-                          onTapToggle: () {
-                            ConversationBloc bloc =
-                            Provider.of(context, listen: false);
-                            bloc.onTapChatFeaturesToggle();
-                          },
-                          media: chosenMedia,
-                          onTapFilePicker: () async {
-                            FilePickerResult? result =
-                            await FilePicker.platform.pickFiles();
-                            if (result != null) {
-                              File file = File(result.files.single.path ?? "");
-                              ConversationBloc bloc =
-                              Provider.of(context, listen: false);
-                              bloc.onChooseMedia(file);
-                            }
-                          },
-                          onTapSubmit: (message) {
-                            ConversationBloc bloc = Provider.of(
-                              context,
-                              listen: false,
-                            );
-                            bloc
-                                .onTapSend(currentUserId, receiverId, message)
-                                .then((_) {
-                              bloc.onMessageSent();
-                              bloc.removeMedia();
-                            });
-                          },
-                          isMessageSent: isMessageSent,
-                        );
-                      },
-                    );
+        create: (context) => ConversationBloc(
+          receiverId: receiverId,
+          senderId: currentUserId,
+        ),
+        child: Consumer<ConversationBloc>(
+          builder: (context, bloc, child) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                VerticalChatMessagesListView(
+                  messages: bloc.messages,
+                  senderId: currentUserId,
+                ),
+                ChatInputBoxWithFeaturesSectionView(
+                  isExpanded: bloc.isChatFeaturesShown,
+                  onTapToggle: () {
+                    ConversationBloc bloc =
+                    Provider.of(context, listen: false);
+                    bloc.onTapChatFeaturesToggle();
                   },
-                );
-              },
-            ),
-          ],
+                  media: bloc.chosenMedia,
+                  onTapFilePicker: () async {
+                    FilePickerResult? result =
+                    await FilePicker.platform.pickFiles();
+                    if (result != null) {
+                      File file = File(result.files.single.path ?? "");
+                      bloc.onChooseMedia(file);
+                    }
+                  },
+                  onTapSubmit: (message) {
+                    bloc.onTapSend(message).then((_) {
+                      bloc.onMessageSent();
+                      bloc.removeMedia();
+                    });
+                  },
+                  isMessageSent: bloc.isMessageSent,
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -169,21 +117,23 @@ class ConversationPage extends StatelessWidget {
 class VerticalChatMessagesListView extends StatelessWidget {
   const VerticalChatMessagesListView({
     Key? key,
-    required this.dummyChatHistory,
+    required this.messages,
+    required this.senderId,
   }) : super(key: key);
 
-  final List<MessageVO>? dummyChatHistory;
+  final List<MessageVO>? messages;
+  final String senderId;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: MARGIN_MEDIUM),
-        itemCount: dummyChatHistory?.length ?? 0,
+        itemCount: messages?.length ?? 0,
         itemBuilder: (BuildContext context, int index) {
           return ChatMessageItemView(
-            isOwnMessage: dummyChatHistory?[index].username == "John",
-            message: dummyChatHistory?[index],
+            isOwnMessage: messages?[index].userId == senderId,
+            message: messages?[index],
           );
         },
         separatorBuilder: (BuildContext context, int index) {
@@ -419,7 +369,9 @@ class _ChatInputBoxViewState extends State<ChatInputBoxView> {
                     borderRadius: BorderRadius.circular(MARGIN_MEDIUM_2),
                   ),
                   child: TextField(
-                    controller: widget.isMessageSent ? TextEditingController(text: "") : null,
+                    controller: widget.isMessageSent
+                        ? TextEditingController(text: "")
+                        : null,
                     decoration: const InputDecoration(
                       filled: true,
                       fillColor: Colors.transparent,
@@ -431,7 +383,10 @@ class _ChatInputBoxViewState extends State<ChatInputBoxView> {
                       suffixIcon: Icon(Icons.emoji_emotions),
                     ),
                     onChanged: (_) {
-                      ConversationBloc bloc = Provider.of(context, listen: false,);
+                      ConversationBloc bloc = Provider.of(
+                        context,
+                        listen: false,
+                      );
                       bloc.onTypedMessage();
                     },
                     onSubmitted: (text) => widget.onTapSubmit(text),

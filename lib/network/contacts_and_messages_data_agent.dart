@@ -4,4 +4,6 @@ abstract class ContactsAndMessagesDataAgent {
 
   Future<void> addMessageToContacts(String senderId, String receiverId, MessageVO message);
 
+  Stream<List<MessageVO>> getMessages(String senderId, String receiverId);
+
 }

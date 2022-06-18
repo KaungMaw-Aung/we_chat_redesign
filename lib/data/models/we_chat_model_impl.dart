@@ -143,4 +143,9 @@ class WeChatModelImpl extends WeChatModel {
     }
     return Future.value(newMessage);
   }
+
+  @override
+  Stream<List<MessageVO>> getMessages(String senderId, String receiverId) {
+    return _messageDataAgent.getMessages(senderId, receiverId);
+  }
 }

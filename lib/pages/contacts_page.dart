@@ -236,6 +236,7 @@ class _ContactsPageState extends State<ContactsPage> {
                                 bloc.currentUserId,
                                 contacts?[index].id ?? "",
                                 contacts?[index].profileUrl ?? "",
+                                contacts?[index].name ?? "",
                               );
                             },
                           );
@@ -256,6 +257,7 @@ class _ContactsPageState extends State<ContactsPage> {
     String senderId,
     String receiverId,
     String receiverProfileUrl,
+    String receiverName,
   ) {
     Navigator.push(
       context,
@@ -264,6 +266,7 @@ class _ContactsPageState extends State<ContactsPage> {
           currentUserId: senderId,
           receiverId: receiverId,
           receiverProfileUrl: receiverProfileUrl,
+          receiverName: receiverName,
         ),
       ),
     );

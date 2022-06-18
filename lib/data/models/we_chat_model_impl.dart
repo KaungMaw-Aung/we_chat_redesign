@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:we_chat_redesign/data/models/we_chat_model.dart';
 import 'package:we_chat_redesign/data/vos/moment_vo.dart';
+import 'package:we_chat_redesign/data/vos/user_vo.dart';
 import 'package:we_chat_redesign/network/cloud_firestore_data_agent_impl.dart';
 
 import '../../network/we_chat_data_agent.dart';
@@ -78,5 +79,16 @@ class WeChatModelImpl extends WeChatModel {
         return Future.error("Error");
       }
     }
+  }
+
+  @override
+  Future<void> addNewToCurrentUserContacts(String newContactUid) async {
+    var newContact = await _dataAgent.getUserById(newContactUid).first;
+    return _dataAgent.addContact(_dataAgent.getCurrentUserId(), newContact);
+  }
+
+  @override
+  Stream<List<UserVO>> getContacts() {
+    return _dataAgent.getContacts();
   }
 }

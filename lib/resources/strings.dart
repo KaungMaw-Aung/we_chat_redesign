@@ -68,3 +68,4 @@ const OK = "OK";
 const EMAIL = "Email";
 const ENTER_EMAIL = "Enter email";
 const ENTER_PASSWORD = "Enter password";
+const QR_CODE = "QR Code";

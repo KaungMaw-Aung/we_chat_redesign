@@ -136,7 +136,7 @@ class LoginPage extends StatelessWidget {
                           if (isEnable) {
                             LoginBloc bloc = Provider.of(context, listen: false);
                             bloc.onTapLogin().then((_) {
-                              navigateToScreen(context, const HostPage());
+                              navigateToScreen(context, HostPage());
                             });
                           }
                         },

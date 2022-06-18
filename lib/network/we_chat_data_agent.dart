@@ -10,7 +10,11 @@ abstract class WeChatDataAgent {
   Future<void> addNewMoment(MomentVO moment);
   Future<void> deleteMoment(String momentId);
   Stream<MomentVO> getMomentById(String momentId);
+
+  /// User
   Stream<UserVO> getUserById(String uid);
+  Future<void> addContact(String ownerId, UserVO newContact);
+  Stream<List<UserVO>> getContacts();
 
   /// Storage
   Future<String> uploadFileToStorage(File chosenMedia);
@@ -21,4 +25,5 @@ abstract class WeChatDataAgent {
   bool isLoggedIn();
   Stream<UserVO> getLoggedInUser();
   Future<void> logout();
+  String getCurrentUserId();
 }

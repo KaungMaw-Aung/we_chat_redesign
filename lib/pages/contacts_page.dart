@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:we_chat_redesign/blocs/contacts_bloc.dart';
 import 'package:we_chat_redesign/data/vos/contact_vo.dart';
 import 'package:we_chat_redesign/widgets/vertical_divider_view.dart';
 
@@ -21,7 +23,7 @@ class _ContactsPageState extends State<ContactsPage> {
   bool showHint = true;
 
   /// Dummy Contacts
-  var dummyContacts = [
+  /*var dummyContacts = [
     ContactVO(
       id: "0",
       profileUrl:
@@ -127,9 +129,9 @@ class _ContactsPageState extends State<ContactsPage> {
       name: "Zin Bo",
       label: "Blah Corporation",
     ),
-  ];
+  ];*/
 
-  @override
+  /*@override
   void initState() {
     [
       "A",
@@ -160,7 +162,7 @@ class _ContactsPageState extends State<ContactsPage> {
       "Z",
     ].forEach((alphabet) {
       var result = dummyContacts.firstWhere(
-        (element) => element.name?.startsWith(alphabet) ?? false,
+            (element) => element.name?.startsWith(alphabet) ?? false,
         orElse: () => ContactVO(
           id: null,
           profileUrl: null,
@@ -176,7 +178,7 @@ class _ContactsPageState extends State<ContactsPage> {
       }
     });
     super.initState();
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -200,28 +202,36 @@ class _ContactsPageState extends State<ContactsPage> {
           SizedBox(width: MARGIN_MEDIUM),
         ],
       ),
-      body: Container(
-        child: Column(
-          children: [
-            SearchBarView(
-              showHint: showHint,
-              onTextChange: (text) {
-                setState(() {
-                  showHint = text.isEmpty;
-                });
-              },
-            ),
-            const HorizontalDividerView(),
-            const ContactsFeaturesBarView(),
-            Expanded(
-              child: ListView.builder(
-                itemCount: dummyContacts.length,
-                itemBuilder: (context, index) {
-                  return ContactItemView(contact: dummyContacts[index]);
+      body: ChangeNotifierProvider<ContactsBloc>(
+        create: (context) => ContactsBloc(),
+        child: Container(
+          child: Column(
+            children: [
+              SearchBarView(
+                showHint: showHint,
+                onTextChange: (text) {
+                  setState(() {
+                    showHint = text.isEmpty;
+                  });
                 },
               ),
-            ),
-          ],
+              const HorizontalDividerView(),
+              const ContactsFeaturesBarView(),
+              Selector<ContactsBloc, List<ContactVO>?>(
+                  builder: (context, contacts, child) {
+                    return Expanded(
+                      child: ListView.builder(
+                        itemCount: contacts?.length ?? 0,
+                        itemBuilder: (context, index) {
+                          return ContactItemView(contact: contacts?[index]);
+                        },
+                      ),
+                    );
+                  },
+                  selector: (context, bloc) => bloc.contacts
+              ),
+            ],
+          ),
         ),
       ),
     );

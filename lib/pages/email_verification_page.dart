@@ -133,7 +133,7 @@ class EmailVerificationPage extends StatelessWidget {
                           bloc
                               .onTapConfirmButton(newUser, profileImageFile)
                               .then((_) {
-                                navigateToScreen(context, const HostPage());
+                                navigateToScreen(context, HostPage());
                           });
                         }
                       },

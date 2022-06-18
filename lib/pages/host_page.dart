@@ -9,7 +9,9 @@ import '../resources/dimens.dart';
 import 'home_page.dart';
 
 class HostPage extends StatefulWidget {
-  const HostPage({Key? key}) : super(key: key);
+  int? selectedIndex;
+
+  HostPage({this.selectedIndex});
 
   @override
   State<HostPage> createState() => _HostPageState();
@@ -29,14 +31,20 @@ class _HostPageState extends State<HostPage> {
     return Scaffold(
       body: Column(
         children: [
-          Expanded(child: mainPages[currentBottomNavIndex]),
+          Expanded(
+              child: mainPages[(widget.selectedIndex == null)
+                  ? currentBottomNavIndex
+                  : widget.selectedIndex!]),
           BottomNavBarView(
             onTapItem: (index) {
               setState(() {
                 currentBottomNavIndex = index;
+                widget.selectedIndex = null;
               });
             },
-            selectedIndex: currentBottomNavIndex,
+            selectedIndex: (widget.selectedIndex == null)
+                ? currentBottomNavIndex
+                : widget.selectedIndex!,
           ),
         ],
       ),

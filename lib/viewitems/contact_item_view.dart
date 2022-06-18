@@ -6,7 +6,7 @@ import '../resources/dimens.dart';
 import '../widgets/horizontal_divider_view.dart';
 
 class ContactItemView extends StatelessWidget {
-  final ContactVO contact;
+  final ContactVO? contact;
 
   ContactItemView({required this.contact});
 
@@ -15,10 +15,10 @@ class ContactItemView extends StatelessWidget {
     return Column(
       children: [
         Visibility(
-          visible: contact.showTopAlphabetBar,
+          visible: contact?.showTopAlphabetBar ?? false,
           child: AlphabetTopBarView(
-            contactsCount: contact.contactsCount ?? 0,
-            alphabet: contact.alphabet ?? "",
+            contactsCount: contact?.contactsCount ?? 0,
+            alphabet: contact?.alphabet ?? "",
           ),
         ),
         SizedBox(
@@ -30,7 +30,7 @@ class ContactItemView extends StatelessWidget {
                 const EdgeInsets.symmetric(horizontal: MARGIN_MEDIUM_3),
                 child: CircleAvatar(
                   backgroundImage: NetworkImage(
-                    contact.profileUrl ?? "",
+                    contact?.profileUrl ?? "",
                   ),
                   radius: CONTACT_ITEM_PROFILE_RADIUS,
                 ),
@@ -47,7 +47,7 @@ class ContactItemView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            contact.name ?? "",
+                            contact?.name ?? "",
                             style: const TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
@@ -56,7 +56,7 @@ class ContactItemView extends StatelessWidget {
                           ),
                           const SizedBox(height: MARGIN_SMALL),
                           Text(
-                            contact.label ?? "",
+                            contact?.label ?? "",
                             maxLines: 2,
                             style: const TextStyle(
                               overflow: TextOverflow.ellipsis,

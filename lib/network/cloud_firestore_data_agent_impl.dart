@@ -11,6 +11,7 @@ import 'package:we_chat_redesign/viewitems/post_item_view.dart';
 
 const momentsCollection = "moments";
 const usersCollection = "users";
+const contactsSubCollection = "contacts";
 const fileUploadRef = "uploads";
 
 class CloudFirestoreDataAgentImpl extends WeChatDataAgent {
@@ -91,6 +92,28 @@ class CloudFirestoreDataAgentImpl extends WeChatDataAgent {
   }
 
   @override
+  Future<void> addContact(String ownerId, UserVO newContact) {
+    return _cloudFirestore
+        .collection(usersCollection)
+        .doc(ownerId)
+        .collection(contactsSubCollection)
+        .doc(newContact.id)
+        .set(newContact.toJson());
+  }
+
+  @override
+  Stream<List<UserVO>> getContacts() {
+    return _cloudFirestore
+        .collection(usersCollection)
+        .doc(getCurrentUserId())
+        .collection(contactsSubCollection)
+        .snapshots()
+        .map((event) => event.docs
+            .map((document) => UserVO.fromJson(document.data()))
+            .toList());
+  }
+
+  @override
   Future<void> registerNewUser(UserVO newUser, File? profileImageFile) {
     return auth
         .createUserWithEmailAndPassword(
@@ -135,5 +158,8 @@ class CloudFirestoreDataAgentImpl extends WeChatDataAgent {
     return auth.signOut();
   }
 
-
+  @override
+  String getCurrentUserId() {
+    return auth.currentUser?.uid ?? "-1";
+  }
 }

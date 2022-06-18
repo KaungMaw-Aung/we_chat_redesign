@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: _authenticationModel.isLoggedIn()
-          ? const HostPage()
+          ? HostPage()
           : const LoginOrSignUpPage(),
     );
   }

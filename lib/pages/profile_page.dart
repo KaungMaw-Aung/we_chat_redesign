@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat_redesign/blocs/profile_bloc.dart';
+import 'package:we_chat_redesign/pages/qr_code_and_scanner_page.dart';
 import 'package:we_chat_redesign/resources/colors.dart';
 import 'package:we_chat_redesign/utils/extensions.dart';
 
@@ -29,6 +30,14 @@ class ProfilePage extends StatelessWidget {
                     child: UserProfileSectionView(
                       name: bloc.name,
                       profileUrl: bloc.profileUrl,
+                      onTapQR: () {
+                        navigateToScreen(
+                          context,
+                          QRCodeAndScannerPage(
+                            qrCode: bloc.qrCode ?? "",
+                          ),
+                        );
+                      },
                     ),
                   ),
                   const ProfileFeaturesSectionView(),
@@ -40,7 +49,9 @@ class ProfilePage extends StatelessWidget {
                           onTapLogout: () {
                             bloc.logout().then((_) {
                               navigateToScreen(
-                                context, const LoginOrSignUpPage(),);
+                                context,
+                                const LoginOrSignUpPage(),
+                              );
                             });
                           },
                         ),
@@ -67,10 +78,7 @@ class LogoutButtonView extends StatelessWidget {
     return GestureDetector(
       onTap: () => onTapLogout(),
       child: Container(
-        width: MediaQuery
-            .of(context)
-            .size
-            .width * 0.5,
+        width: MediaQuery.of(context).size.width * 0.5,
         height: MARGIN_XXLARGE,
         decoration: BoxDecoration(
           color: Colors.white,
@@ -155,10 +163,12 @@ class ProfileFeaturesSectionView extends StatelessWidget {
 class UserProfileSectionView extends StatelessWidget {
   final String? name;
   final String? profileUrl;
+  final Function onTapQR;
 
   UserProfileSectionView({
     required this.name,
     required this.profileUrl,
+    required this.onTapQR,
   });
 
   @override
@@ -169,7 +179,10 @@ class UserProfileSectionView extends StatelessWidget {
           height: USER_PROFILE_TOP_BACKGROUND_HEIGHT,
           child: Column(
             children: [
-              NameAndQRScanButtonView(name: name),
+              NameAndQRScanButtonView(
+                name: name,
+                onTapQR: onTapQR,
+              ),
               const UserMottoView(),
             ],
           ),
@@ -232,8 +245,12 @@ class UserMottoView extends StatelessWidget {
 
 class NameAndQRScanButtonView extends StatelessWidget {
   final String? name;
+  final Function onTapQR;
 
-  NameAndQRScanButtonView({required this.name});
+  NameAndQRScanButtonView({
+    required this.name,
+    required this.onTapQR,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -260,18 +277,21 @@ class NameAndQRScanButtonView extends StatelessWidget {
             Positioned(
               top: MARGIN_MEDIUM_2,
               right: MARGIN_MEDIUM_2,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Icon(
-                    Icons.qr_code,
-                    color: Colors.white,
-                  ),
-                  Icon(
-                    Icons.chevron_right,
-                    color: Colors.white,
-                  )
-                ],
+              child: GestureDetector(
+                onTap: () => onTapQR(),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Icon(
+                      Icons.qr_code,
+                      color: Colors.white,
+                    ),
+                    Icon(
+                      Icons.chevron_right,
+                      color: Colors.white,
+                    )
+                  ],
+                ),
               ),
             ),
           ],

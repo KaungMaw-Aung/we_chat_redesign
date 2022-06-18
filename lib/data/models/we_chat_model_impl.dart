@@ -23,26 +23,25 @@ class WeChatModelImpl extends WeChatModel {
   }
 
   @override
-  Future<void> addNewMoment(String description, File? chosenMedia) {
+  Future<void> addNewMoment(String description, File? chosenMedia, String username, String profileUrl) {
     if (chosenMedia != null) {
       return _dataAgent
           .uploadFileToStorage(chosenMedia)
-          .then((downloadUrl) => craftNewMoment(description, downloadUrl))
+          .then((downloadUrl) => craftNewMoment(description, downloadUrl, username, profileUrl))
           .then((value) => _dataAgent.addNewMoment(value));
     } else {
-      return craftNewMoment(description, "")
+      return craftNewMoment(description, "", username, profileUrl)
           .then((moment) => _dataAgent.addNewMoment(moment));
     }
   }
 
-  Future<MomentVO> craftNewMoment(String description, String chosenMediaUrl) {
+  Future<MomentVO> craftNewMoment(String description, String chosenMediaUrl, String username, String profileUrl) {
     return Future.value(
       MomentVO(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         description: description,
-        profilePicture:
-            "https://i.pinimg.com/originals/39/e9/b3/39e9b39628e745a39f900dc14ee4d9a7.jpg",
-        username: "Nina Rocha",
+        profilePicture: profileUrl,
+        username: username,
         postMedia: chosenMediaUrl,
       ),
     );
@@ -96,5 +95,10 @@ class WeChatModelImpl extends WeChatModel {
   @override
   Stream<List<UserVO>> getContacts() {
     return _dataAgent.getContacts();
+  }
+
+  @override
+  Stream<UserVO> getProfileData() {
+    return _dataAgent.getUserById(_dataAgent.getCurrentUserId());
   }
 }

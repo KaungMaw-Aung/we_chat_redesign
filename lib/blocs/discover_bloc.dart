@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:we_chat_redesign/data/vos/user_vo.dart';
 
 import '../data/models/we_chat_model.dart';
 import '../data/models/we_chat_model_impl.dart';
@@ -8,11 +9,19 @@ class DiscoverBloc extends ChangeNotifier {
   /// State Variables
   List<MomentVO>? moments;
   bool isDisposed = false;
+  UserVO? profileData;
 
   /// Models
   final WeChatModel _model = WeChatModelImpl();
 
   DiscoverBloc() {
+
+    /// Get User Profile
+    _model.getProfileData().listen((profile) {
+      print("profile ==> ${profile.toString()}");
+      profileData = profile;
+      safelyNotifyListeners();
+    }).onError((error) => debugPrint(error.toString()));
 
     /// Get Moments
     _model.getMoments().listen((moments) {
@@ -26,16 +35,16 @@ class DiscoverBloc extends ChangeNotifier {
     _model.deleteMoment(momentId);
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    isDisposed = true;
-  }
-
   void safelyNotifyListeners() {
     if (isDisposed == false) {
       notifyListeners();
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    isDisposed = true;
   }
 
 }

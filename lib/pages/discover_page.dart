@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat_redesign/blocs/discover_bloc.dart';
+import 'package:we_chat_redesign/data/vos/moment_vo.dart';
 import 'package:we_chat_redesign/utils/extensions.dart';
 
+import '../data/vos/user_vo.dart';
 import '../resources/colors.dart';
 import '../resources/dimens.dart';
 import '../resources/strings.dart';
@@ -12,50 +14,80 @@ import 'add_or_edit_moment_page.dart';
 class DiscoverPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: PRIMARY_COLOR,
-        title: const Text(
-          MOMENTS,
-          style: TextStyle(color: Colors.white70),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.camera_alt_outlined,
-              size: MARGIN_XLARGE,
-            ),
-            color: Colors.white70,
-            onPressed: () => navigateToScreen(context, AddOrEditMomentPage()),
+    return ChangeNotifierProvider<DiscoverBloc>(
+      create: (context) => DiscoverBloc(),
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: PRIMARY_COLOR,
+          title: const Text(
+            MOMENTS,
+            style: TextStyle(color: Colors.white70),
           ),
-          const SizedBox(width: MARGIN_MEDIUM),
-        ],
-      ),
-      body: ChangeNotifierProvider<DiscoverBloc>(
-        create: (context) => DiscoverBloc(),
-        child: SingleChildScrollView(
+          centerTitle: true,
+          actions: [
+            Builder(
+              builder: (context) {
+                return IconButton(
+                  icon: const Icon(
+                    Icons.camera_alt_outlined,
+                    size: MARGIN_XLARGE,
+                  ),
+                  color: Colors.white70,
+                  onPressed: () {
+                    DiscoverBloc bloc = Provider.of(context, listen: false);
+                    navigateToScreen(
+                      context,
+                      AddOrEditMomentPage(
+                        username: bloc.profileData?.name ?? "",
+                        profileUrl: bloc.profileData?.profilePicture ?? "",
+                      ),
+                    );
+                  },
+                );
+              }
+            ),
+            const SizedBox(width: MARGIN_MEDIUM),
+          ],
+        ),
+        body: SingleChildScrollView(
           child: Column(
             children: [
-              const MomentProfileView(),
-              Consumer<DiscoverBloc>(
-                builder: (context, bloc, child) {
+              Selector<DiscoverBloc, UserVO?>(
+                selector: (context, bloc) => bloc.profileData,
+                builder: (context, profile, child) {
+                  return MomentProfileView(profileData: profile);
+                },
+              ),
+              Selector<DiscoverBloc, List<MomentVO>?>(
+                selector: (context, bloc) => bloc.moments,
+                builder: (context, moments, child) {
                   return ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount: bloc.moments?.length ?? 0,
+                    itemCount: moments?.length ?? 0,
                     itemBuilder: (context, index) {
                       return PostItemView(
-                        momentVO: bloc.moments?[index],
+                        momentVO: moments?[index],
                         onTapDelete: (momentId) {
+                          DiscoverBloc bloc =
+                              Provider.of(context, listen: false);
                           bloc.deleteMoment(momentId);
                         },
                         onTapEdit: (momentId) {
                           Future.delayed(const Duration(milliseconds: 1000))
                               .then((value) {
+                            DiscoverBloc bloc = Provider.of(
+                              context,
+                              listen: false,
+                            );
                             navigateToScreen(
                               context,
-                              AddOrEditMomentPage(momentId: momentId),
+                              AddOrEditMomentPage(
+                                momentId: momentId,
+                                username: bloc.profileData?.name ?? "",
+                                profileUrl:
+                                    bloc.profileData?.profilePicture ?? "",
+                              ),
                             );
                           });
                         },
@@ -63,7 +95,7 @@ class DiscoverPage extends StatelessWidget {
                     },
                   );
                 },
-              ),
+              )
             ],
           ),
         ),
@@ -73,21 +105,23 @@ class DiscoverPage extends StatelessWidget {
 }
 
 class MomentProfileView extends StatelessWidget {
-  const MomentProfileView({
-    Key? key,
-  }) : super(key: key);
+  final UserVO? profileData;
+
+  MomentProfileView({required this.profileData});
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        const ProfileCoverNameDateAndMomentsCountView(),
+        ProfileCoverNameDateAndMomentsCountView(
+          name: profileData?.name,
+        ),
         Positioned(
           top: MediaQuery.of(context).size.height * 0.278,
           left: MediaQuery.of(context).size.width * 0.2,
-          child: const CircleAvatar(
+          child: CircleAvatar(
             backgroundImage: NetworkImage(
-              "https://i.pinimg.com/originals/39/e9/b3/39e9b39628e745a39f900dc14ee4d9a7.jpg",
+              profileData?.profilePicture ?? "",
             ),
             radius: PROFILE_COVER_IMAGE_RADIUS,
           ),
@@ -98,15 +132,19 @@ class MomentProfileView extends StatelessWidget {
 }
 
 class ProfileCoverNameDateAndMomentsCountView extends StatelessWidget {
-  const ProfileCoverNameDateAndMomentsCountView({
-    Key? key,
-  }) : super(key: key);
+  final String? name;
+
+  ProfileCoverNameDateAndMomentsCountView({
+    required this.name,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const ProfileCoverAndNameView(),
+        ProfileCoverAndNameView(
+          name: name,
+        ),
         Container(
           height: MARGIN_MEDIUM,
           color: PROFILE_COVER_DIVIDER_COLOR,
@@ -155,9 +193,9 @@ class ProfileNameAndMomentsCountView extends StatelessWidget {
 }
 
 class ProfileCoverAndNameView extends StatelessWidget {
-  const ProfileCoverAndNameView({
-    Key? key,
-  }) : super(key: key);
+  final String? name;
+
+  ProfileCoverAndNameView({required this.name});
 
   @override
   Widget build(BuildContext context) {
@@ -172,13 +210,13 @@ class ProfileCoverAndNameView extends StatelessWidget {
           fit: BoxFit.cover,
         ),
       ),
-      child: const Align(
+      child: Align(
         alignment: Alignment.bottomRight,
         child: Padding(
-          padding: EdgeInsets.all(MARGIN_CARD_MEDIUM_2),
+          padding: const EdgeInsets.all(MARGIN_CARD_MEDIUM_2),
           child: Text(
-            "Nina Rocha",
-            style: TextStyle(
+            name ?? "",
+            style: const TextStyle(
               color: Colors.white,
               fontSize: TEXT_REGULAR_3X,
               fontWeight: FontWeight.w500,

@@ -4,7 +4,6 @@ import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:we_chat_redesign/blocs/add_new_moment_bloc.dart';
@@ -18,8 +17,14 @@ import '../widgets/loading_view.dart';
 
 class AddOrEditMomentPage extends StatefulWidget {
   final String? momentId;
+  final String username;
+  final String profileUrl;
 
-  AddOrEditMomentPage({this.momentId});
+  AddOrEditMomentPage({
+    this.momentId,
+    required this.username,
+    required this.profileUrl,
+  });
 
   @override
   State<AddOrEditMomentPage> createState() => _AddOrEditMomentPageState();
@@ -32,7 +37,11 @@ class _AddOrEditMomentPageState extends State<AddOrEditMomentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ChangeNotifierProvider<AddNewMomentBloc>(
-        create: (context) => AddNewMomentBloc(momentId: widget.momentId),
+        create: (context) => AddNewMomentBloc(
+          momentId: widget.momentId,
+          username: widget.username,
+          profileUrl: widget.profileUrl,
+        ),
         child: SafeArea(
           child: Stack(
             children: [
@@ -59,7 +68,10 @@ class _AddOrEditMomentPageState extends State<AddOrEditMomentPage> {
                     const SizedBox(height: MARGIN_SMALL),
                     const HorizontalDividerView(),
                     const SizedBox(height: MARGIN_CARD_MEDIUM_2),
-                    const UserProfileAndNameSectionView(),
+                    UserProfileAndNameSectionView(
+                      username: widget.username,
+                      profileUrl: widget.profileUrl,
+                    ),
                     Padding(
                       padding: const EdgeInsets.only(
                         left: MARGIN_MEDIUM_2,
@@ -368,42 +380,45 @@ class BottomSheetListTileView extends StatelessWidget {
 }
 
 class UserProfileAndNameSectionView extends StatelessWidget {
-  const UserProfileAndNameSectionView({
-    Key? key,
-  }) : super(key: key);
+  final String username;
+  final String profileUrl;
+
+  UserProfileAndNameSectionView({
+    required this.username,
+    required this.profileUrl,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        SizedBox(width: MARGIN_CARD_MEDIUM_2),
+      children: [
+        const SizedBox(width: MARGIN_CARD_MEDIUM_2),
         CircleAvatar(
-          backgroundImage: NetworkImage(
-            "https://i.pinimg.com/originals/39/e9/b3/39e9b39628e745a39f900dc14ee4d9a7.jpg",
-          ),
+          backgroundImage: NetworkImage(profileUrl),
           radius: MARGIN_LARGE,
         ),
-        SizedBox(width: MARGIN_CARD_MEDIUM_2),
-        UsernameAndFriendsButtonView(),
+        const SizedBox(width: MARGIN_CARD_MEDIUM_2),
+        UsernameAndFriendsButtonView(username: username),
       ],
     );
   }
 }
 
 class UsernameAndFriendsButtonView extends StatelessWidget {
-  const UsernameAndFriendsButtonView({
-    Key? key,
-  }) : super(key: key);
+  final String username;
+
+  UsernameAndFriendsButtonView({required this.username});
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: MARGIN_SMALL),
-        const Text(
-          "Nina Rocha",
-          style: TextStyle(
+        Text(
+          username,
+          style: const TextStyle(
             color: Colors.black54,
             fontSize: TEXT_CARD_REGULAR_2X,
             fontWeight: FontWeight.w600,

@@ -18,11 +18,17 @@ class AddNewMomentBloc extends ChangeNotifier {
   File? chosenMedia;
   MomentVO? loadedMoment;
   String? loadedMediaUrl;
+  String username;
+  String profileUrl;
 
   /// Models
   final WeChatModel _model = WeChatModelImpl();
 
-  AddNewMomentBloc({String? momentId}) {
+  AddNewMomentBloc({
+    String? momentId,
+    required this.username,
+    required this.profileUrl,
+  }) {
     if (momentId != null) {
       isInEditMode = true;
       prepopulateDataForEditMode(momentId);
@@ -56,7 +62,12 @@ class AddNewMomentBloc extends ChangeNotifier {
   }
 
   Future<void> addNewMoment() {
-    return _model.addNewMoment(momentDescription, chosenMedia);
+    return _model.addNewMoment(
+      momentDescription,
+      chosenMedia,
+      username,
+      profileUrl,
+    );
   }
 
   Future<void> editMoment() {

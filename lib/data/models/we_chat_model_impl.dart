@@ -8,7 +8,6 @@ import 'package:we_chat_redesign/network/cloud_firestore_data_agent_impl.dart';
 import '../../network/we_chat_data_agent.dart';
 
 class WeChatModelImpl extends WeChatModel {
-
   static final WeChatModelImpl _singleton = WeChatModelImpl._internal();
 
   factory WeChatModelImpl() => _singleton;
@@ -82,9 +81,16 @@ class WeChatModelImpl extends WeChatModel {
   }
 
   @override
-  Future<void> addNewToCurrentUserContacts(String newContactUid) async {
+  Future<String> addNewToCurrentUserContacts(String newContactUid) async {
     var newContact = await _dataAgent.getUserById(newContactUid).first;
-    return _dataAgent.addContact(_dataAgent.getCurrentUserId(), newContact);
+    return _dataAgent
+        .addContact(_dataAgent.getCurrentUserId(), newContact)
+        .then((value) => newContact.id ?? "");
+  }
+
+  @override
+  Future<void> addCurrentUserToScannedUserContacts(String otherUserId, UserVO currentUser) {
+    return _dataAgent.addContact(otherUserId, currentUser);
   }
 
   @override

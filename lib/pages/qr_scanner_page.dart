@@ -4,11 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:we_chat_redesign/blocs/qr_scanner_bloc.dart';
+import 'package:we_chat_redesign/data/vos/user_vo.dart';
 import 'package:we_chat_redesign/pages/contacts_page.dart';
 import 'package:we_chat_redesign/pages/host_page.dart';
 
 class QRScannerPage extends StatefulWidget {
-  const QRScannerPage({Key? key}) : super(key: key);
+  final UserVO userVO;
+
+  QRScannerPage({required this.userVO});
 
   @override
   State<QRScannerPage> createState() => _QRScannerPageState();
@@ -33,7 +36,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ChangeNotifierProvider<QRScannerBloc>(
-        create: (context) => QRScannerBloc(),
+        create: (context) => QRScannerBloc(currentUser: widget.userVO),
         child: Column(
           children: [
             Expanded(

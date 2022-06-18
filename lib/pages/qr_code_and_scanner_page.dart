@@ -6,12 +6,17 @@ import 'package:we_chat_redesign/resources/colors.dart';
 import 'package:we_chat_redesign/resources/dimens.dart';
 import 'package:we_chat_redesign/utils/extensions.dart';
 
+import '../data/vos/user_vo.dart';
 import '../resources/strings.dart';
 
 class QRCodeAndScannerPage extends StatelessWidget {
   final String qrCode;
+  final UserVO currentUser;
 
-  QRCodeAndScannerPage({required this.qrCode});
+  QRCodeAndScannerPage({
+    required this.qrCode,
+    required this.currentUser,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,16 +30,19 @@ class QRCodeAndScannerPage extends StatelessWidget {
         ),
         title: const Text(
           QR_CODE,
-          style: TextStyle(
-            color: Colors.white70
-          ),
+          style: TextStyle(color: Colors.white70),
         ),
         centerTitle: true,
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: PRIMARY_COLOR,
         onPressed: () {
-          navigateToScreen(context, const QRScannerPage());
+          navigateToScreen(
+            context,
+            QRScannerPage(
+              userVO: currentUser,
+            ),
+          );
         },
         child: const Icon(
           Icons.qr_code_scanner,

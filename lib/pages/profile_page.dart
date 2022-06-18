@@ -31,10 +31,12 @@ class ProfilePage extends StatelessWidget {
                       name: bloc.name,
                       profileUrl: bloc.profileUrl,
                       onTapQR: () {
+                        ProfileBloc bloc = Provider.of(context, listen: false);
                         navigateToScreen(
                           context,
                           QRCodeAndScannerPage(
                             qrCode: bloc.qrCode ?? "",
+                            currentUser: bloc.currentUser!,
                           ),
                         );
                       },

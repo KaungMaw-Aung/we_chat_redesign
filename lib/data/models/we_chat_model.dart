@@ -14,7 +14,8 @@ abstract class WeChatModel {
   Future<void> editMoment(MomentVO? moment, File? chosenMedia);
 
   /// User
-  Future<void> addNewToCurrentUserContacts(String newContactUid);
+  Future<String> addNewToCurrentUserContacts(String newContactUid);
+  Future<void> addCurrentUserToScannedUserContacts(String otherUserId, UserVO currentUser);
   Stream<List<UserVO>> getContacts();
 
 }

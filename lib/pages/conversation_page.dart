@@ -16,10 +16,18 @@ import '../viewitems/post_item_view.dart';
 import '../widgets/contacts_feature_item_view.dart';
 
 class ConversationPage extends StatelessWidget {
-  ConversationPage({Key? key}) : super(key: key);
+  final String currentUserId;
+  final String receiverId;
+  final String receiverProfileUrl;
+
+  ConversationPage({
+    required this.currentUserId,
+    required this.receiverId,
+    required this.receiverProfileUrl,
+  });
 
   /// Dummy Chat History
-  var dummyChatHistory = [
+  /*var dummyChatHistory = [
     MessageVO(
       "https://i.pinimg.com/originals/39/e9/b3/39e9b39628e745a39f900dc14ee4d9a7.jpg",
       "John",
@@ -55,7 +63,7 @@ class ConversationPage extends StatelessWidget {
       "",
       "3:21 PM",
     ),
-  ];
+  ];*/
 
   @override
   Widget build(BuildContext context) {
@@ -99,9 +107,10 @@ class ConversationPage extends StatelessWidget {
       body: ChangeNotifierProvider<ConversationBloc>(
         create: (context) => ConversationBloc(),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             VerticalChatMessagesListView(
-              dummyChatHistory: dummyChatHistory,
+              dummyChatHistory: null,
             ),
             Selector<ConversationBloc, bool>(
               selector: (context, bloc) => bloc.isChatFeaturesShown,
@@ -109,23 +118,41 @@ class ConversationPage extends StatelessWidget {
                 return Selector<ConversationBloc, File?>(
                   selector: (context, bloc) => bloc.chosenMedia,
                   builder: (context, chosenMedia, child) {
-                    return ChatInputBoxWithFeaturesSectionView(
-                      isExpanded: isChatFeaturesShown,
-                      onTapToggle: () {
-                        ConversationBloc bloc =
+                    return Selector<ConversationBloc, bool>(
+                      selector: (context, bloc) => bloc.isMessageSent,
+                      builder: (context, isMessageSent, child) {
+                        return ChatInputBoxWithFeaturesSectionView(
+                          isExpanded: isChatFeaturesShown,
+                          onTapToggle: () {
+                            ConversationBloc bloc =
                             Provider.of(context, listen: false);
-                        bloc.onTapChatFeaturesToggle();
-                      },
-                      media: chosenMedia,
-                      onTapFilePicker: () async {
-                        FilePickerResult? result =
+                            bloc.onTapChatFeaturesToggle();
+                          },
+                          media: chosenMedia,
+                          onTapFilePicker: () async {
+                            FilePickerResult? result =
                             await FilePicker.platform.pickFiles();
-                        if (result != null) {
-                          File file = File(result.files.single.path ?? "");
-                          ConversationBloc bloc =
+                            if (result != null) {
+                              File file = File(result.files.single.path ?? "");
+                              ConversationBloc bloc =
                               Provider.of(context, listen: false);
-                          bloc.onChooseMedia(file);
-                        }
+                              bloc.onChooseMedia(file);
+                            }
+                          },
+                          onTapSubmit: (message) {
+                            ConversationBloc bloc = Provider.of(
+                              context,
+                              listen: false,
+                            );
+                            bloc
+                                .onTapSend(currentUserId, receiverId, message)
+                                .then((_) {
+                              bloc.onMessageSent();
+                              bloc.removeMedia();
+                            });
+                          },
+                          isMessageSent: isMessageSent,
+                        );
                       },
                     );
                   },
@@ -145,18 +172,18 @@ class VerticalChatMessagesListView extends StatelessWidget {
     required this.dummyChatHistory,
   }) : super(key: key);
 
-  final List<MessageVO> dummyChatHistory;
+  final List<MessageVO>? dummyChatHistory;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: MARGIN_MEDIUM),
-        itemCount: dummyChatHistory.length,
+        itemCount: dummyChatHistory?.length ?? 0,
         itemBuilder: (BuildContext context, int index) {
           return ChatMessageItemView(
-            isOwnMessage: dummyChatHistory[index].username == "John",
-            message: dummyChatHistory[index],
+            isOwnMessage: dummyChatHistory?[index].username == "John",
+            message: dummyChatHistory?[index],
           );
         },
         separatorBuilder: (BuildContext context, int index) {
@@ -172,6 +199,8 @@ class ChatInputBoxWithFeaturesSectionView extends StatelessWidget {
   final Function onTapToggle;
   final Function onTapFilePicker;
   final File? media;
+  final Function(String) onTapSubmit;
+  final bool isMessageSent;
 
   var kAnimationDuration = const Duration(milliseconds: 300);
 
@@ -180,6 +209,8 @@ class ChatInputBoxWithFeaturesSectionView extends StatelessWidget {
     required this.onTapToggle,
     required this.onTapFilePicker,
     required this.media,
+    required this.onTapSubmit,
+    required this.isMessageSent,
   });
 
   @override
@@ -190,6 +221,8 @@ class ChatInputBoxWithFeaturesSectionView extends StatelessWidget {
           isExpanded: isExpanded,
           onTapToggle: onTapToggle,
           media: media,
+          onTapSubmit: onTapSubmit,
+          isMessageSent: isMessageSent,
         ),
         AnimatedSize(
           duration: kAnimationDuration,
@@ -277,11 +310,15 @@ class ChatInputBoxView extends StatefulWidget {
   final bool isExpanded;
   final Function onTapToggle;
   final File? media;
+  final Function(String) onTapSubmit;
+  final bool isMessageSent;
 
   ChatInputBoxView({
     required this.isExpanded,
     required this.onTapToggle,
     required this.media,
+    required this.onTapSubmit,
+    required this.isMessageSent,
   });
 
   @override
@@ -327,7 +364,7 @@ class _ChatInputBoxViewState extends State<ChatInputBoxView> {
                   child: (getUrlType(widget.media?.uri.path ?? "") ==
                           UrlType.OTHER)
                       ? Expanded(
-                        child: Container(
+                          child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(
                                 MARGIN_MEDIUM_2,
@@ -340,10 +377,10 @@ class _ChatInputBoxViewState extends State<ChatInputBoxView> {
                               ),
                             ),
                           ),
-                      )
+                        )
                       : FlickVideoPlayer(
-                        flickManager: _flickManager,
-                      ),
+                          flickManager: _flickManager,
+                        ),
                 ),
                 const Spacer(),
                 Builder(builder: (context) {
@@ -381,8 +418,9 @@ class _ChatInputBoxViewState extends State<ChatInputBoxView> {
                     color: CHAT_BOX_TEXT_FIELD_BACKGROUND_COLOR,
                     borderRadius: BorderRadius.circular(MARGIN_MEDIUM_2),
                   ),
-                  child: const TextField(
-                    decoration: InputDecoration(
+                  child: TextField(
+                    controller: widget.isMessageSent ? TextEditingController(text: "") : null,
+                    decoration: const InputDecoration(
                       filled: true,
                       fillColor: Colors.transparent,
                       border: InputBorder.none,
@@ -392,6 +430,11 @@ class _ChatInputBoxViewState extends State<ChatInputBoxView> {
                       ),
                       suffixIcon: Icon(Icons.emoji_emotions),
                     ),
+                    onChanged: (_) {
+                      ConversationBloc bloc = Provider.of(context, listen: false,);
+                      bloc.onTypedMessage();
+                    },
+                    onSubmitted: (text) => widget.onTapSubmit(text),
                   ),
                 ),
               ),

@@ -9,5 +9,6 @@ abstract class AuthenticationModel {
   bool isLoggedIn();
   Stream<UserVO> getLoggedInUser();
   Future<void> logout();
+  String getCurrentUserId();
 
 }

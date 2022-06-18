@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:we_chat_redesign/data/models/we_chat_model.dart';
+import 'package:we_chat_redesign/data/vos/message_vo.dart';
 import 'package:we_chat_redesign/data/vos/moment_vo.dart';
 import 'package:we_chat_redesign/data/vos/user_vo.dart';
 import 'package:we_chat_redesign/network/cloud_firestore_data_agent_impl.dart';
+import 'package:we_chat_redesign/network/contacts_and_messages_data_agent.dart';
+import 'package:we_chat_redesign/network/realtime_database_data_agent_impl.dart';
 
 import '../../network/we_chat_data_agent.dart';
 
@@ -14,8 +17,10 @@ class WeChatModelImpl extends WeChatModel {
 
   WeChatModelImpl._internal();
 
-  /// DataAgent
+  /// DataAgents
   final WeChatDataAgent _dataAgent = CloudFirestoreDataAgentImpl();
+  final ContactsAndMessagesDataAgent _messageDataAgent =
+      RealtimeDatabaseDataAgentImpl();
 
   @override
   Stream<List<MomentVO>> getMoments() {
@@ -23,11 +28,13 @@ class WeChatModelImpl extends WeChatModel {
   }
 
   @override
-  Future<void> addNewMoment(String description, File? chosenMedia, String username, String profileUrl) {
+  Future<void> addNewMoment(String description, File? chosenMedia,
+      String username, String profileUrl) {
     if (chosenMedia != null) {
       return _dataAgent
           .uploadFileToStorage(chosenMedia)
-          .then((downloadUrl) => craftNewMoment(description, downloadUrl, username, profileUrl))
+          .then((downloadUrl) =>
+              craftNewMoment(description, downloadUrl, username, profileUrl))
           .then((value) => _dataAgent.addNewMoment(value));
     } else {
       return craftNewMoment(description, "", username, profileUrl)
@@ -35,7 +42,8 @@ class WeChatModelImpl extends WeChatModel {
     }
   }
 
-  Future<MomentVO> craftNewMoment(String description, String chosenMediaUrl, String username, String profileUrl) {
+  Future<MomentVO> craftNewMoment(String description, String chosenMediaUrl,
+      String username, String profileUrl) {
     return Future.value(
       MomentVO(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -88,7 +96,8 @@ class WeChatModelImpl extends WeChatModel {
   }
 
   @override
-  Future<void> addCurrentUserToScannedUserContacts(String otherUserId, UserVO currentUser) {
+  Future<void> addCurrentUserToScannedUserContacts(
+      String otherUserId, UserVO currentUser) {
     return _dataAgent.addContact(otherUserId, currentUser);
   }
 
@@ -100,5 +109,38 @@ class WeChatModelImpl extends WeChatModel {
   @override
   Stream<UserVO> getProfileData() {
     return _dataAgent.getUserById(_dataAgent.getCurrentUserId());
+  }
+
+  @override
+  Future<void> sendMessage(
+    String senderId,
+    String receiverId,
+    File? media,
+    String message,
+  ) {
+    return craftMessageVO(senderId, message, media).then((newMessage) {
+      return _messageDataAgent.addMessageToContacts(
+        senderId,
+        receiverId,
+        newMessage,
+      );
+    });
+  }
+
+  Future<MessageVO> craftMessageVO(
+    String userId,
+    String message,
+    File? media,
+  ) async {
+    var newMessage = MessageVO(
+        userId, "", message, "", "", DateTime.now().millisecondsSinceEpoch
+    );
+    var currentUser = await getProfileData().first;
+    newMessage.username = currentUser.name ?? "";
+    newMessage.profileUrl = currentUser.profilePicture ?? "";
+    if (media != null) {
+      newMessage.mediaUrl = await _dataAgent.uploadFileToStorage(media);
+    }
+    return Future.value(newMessage);
   }
 }

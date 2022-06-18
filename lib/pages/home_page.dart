@@ -25,6 +25,7 @@ class _HomePageState extends State<HomePage> {
       "n publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content.",
       "",
       "3:21 PM",
+      1,
     ),
     MessageVO(
       "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cG9ydHJhaXR8ZW58MHx8MHx8&w=1000&q=80",
@@ -32,6 +33,7 @@ class _HomePageState extends State<HomePage> {
       "n publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content.",
       "",
       "3:21 PM",
+      1,
     ),
     MessageVO(
       "https://img.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg?w=2000",
@@ -39,6 +41,7 @@ class _HomePageState extends State<HomePage> {
       "n publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content.",
       "",
       "3:21 PM",
+      1,
     ),
     MessageVO(
       "https://img.freepik.com/free-photo/dreamy-young-woman-sunglasses-looking-front_197531-16739.jpg?w=2000",
@@ -46,6 +49,7 @@ class _HomePageState extends State<HomePage> {
       "n publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content.",
       "",
       "3:21 PM",
+      1,
     ),
     MessageVO(
       "https://images.squarespace-cdn.com/content/v1/54d96fcde4b0af07ca2a8871/1616629467192-HQSTI9MSL8ES895CWWCK/Linked+in_-3.jpg",
@@ -53,6 +57,7 @@ class _HomePageState extends State<HomePage> {
       "n publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content.",
       "",
       "3:21 PM",
+      1,
     ),
   ];
 
@@ -100,9 +105,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   void navigateToConversationPage(BuildContext context) {
-    Navigator.push(
+    /*Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ConversationPage(),),);
+      MaterialPageRoute(builder: (context) => ConversationPage(),),);*/
   }
 
 }

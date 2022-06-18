@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:we_chat_redesign/data/models/we_chat_model_impl.dart';
 
+import '../data/models/authentication_model.dart';
+import '../data/models/authentication_model_impl.dart';
 import '../data/models/we_chat_model.dart';
 import '../data/vos/contact_vo.dart';
 
@@ -8,11 +10,14 @@ class ContactsBloc extends ChangeNotifier {
   /// State Variables
   bool isDisposed = false;
   List<ContactVO>? contacts;
+  String currentUserId = "";
 
   /// Models
   final WeChatModel _model = WeChatModelImpl();
+  final AuthenticationModel _authModel = AuthenticationModelImpl();
 
   ContactsBloc() {
+
     /// Get Contacts
     _model.getContacts().listen((contacts) {
       this.contacts = contacts
@@ -48,6 +53,10 @@ class ContactsBloc extends ChangeNotifier {
 
       safelyNotifyListeners();
     }).onError((error) => debugPrint(error.toString()));
+
+    /// Get Current User Id
+    currentUserId = _authModel.getCurrentUserId();
+
   }
 
   void safelyNotifyListeners() {

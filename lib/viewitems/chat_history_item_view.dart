@@ -72,7 +72,7 @@ class ChatHistoryItemView extends StatelessWidget {
                         ),
                         const Spacer(),
                         Text(
-                          messageVO.sentAt ?? "",
+                          messageVO.sentAt?.toString() ?? "",
                           style: const TextStyle(
                             color: Colors.black26,
                             fontSize: TEXT_REGULAR,

@@ -42,4 +42,9 @@ class AuthenticationModelImpl extends AuthenticationModel {
     return _dataAgent.logout();
   }
 
+  @override
+  String getCurrentUserId() {
+    return _dataAgent.getCurrentUserId();
+  }
+
 }

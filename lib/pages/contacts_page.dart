@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat_redesign/blocs/contacts_bloc.dart';
 import 'package:we_chat_redesign/data/vos/contact_vo.dart';
+import 'package:we_chat_redesign/pages/conversation_page.dart';
 import 'package:we_chat_redesign/widgets/vertical_divider_view.dart';
 
 import '../resources/colors.dart';
@@ -223,15 +224,46 @@ class _ContactsPageState extends State<ContactsPage> {
                       child: ListView.builder(
                         itemCount: contacts?.length ?? 0,
                         itemBuilder: (context, index) {
-                          return ContactItemView(contact: contacts?[index]);
+                          ContactsBloc bloc = Provider.of(
+                            context,
+                            listen: false,
+                          );
+                          return ContactItemView(
+                            contact: contacts?[index],
+                            onTapContact: () {
+                              navigateToConversationPage(
+                                context,
+                                bloc.currentUserId,
+                                contacts?[index].id ?? "",
+                                contacts?[index].profileUrl ?? "",
+                              );
+                            },
+                          );
                         },
                       ),
                     );
                   },
-                  selector: (context, bloc) => bloc.contacts
-              ),
+                  selector: (context, bloc) => bloc.contacts),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  void navigateToConversationPage(
+    BuildContext context,
+    String senderId,
+    String receiverId,
+    String receiverProfileUrl,
+  ) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ConversationPage(
+          currentUserId: senderId,
+          receiverId: receiverId,
+          receiverProfileUrl: receiverProfileUrl,
         ),
       ),
     );

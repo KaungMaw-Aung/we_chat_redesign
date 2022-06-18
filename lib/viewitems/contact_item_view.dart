@@ -7,75 +7,82 @@ import '../widgets/horizontal_divider_view.dart';
 
 class ContactItemView extends StatelessWidget {
   final ContactVO? contact;
+  final Function onTapContact;
 
-  ContactItemView({required this.contact});
+  ContactItemView({
+    required this.contact,
+    required this.onTapContact,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Visibility(
-          visible: contact?.showTopAlphabetBar ?? false,
-          child: AlphabetTopBarView(
-            contactsCount: contact?.contactsCount ?? 0,
-            alphabet: contact?.alphabet ?? "",
+    return GestureDetector(
+      onTap: () => onTapContact(),
+      child: Column(
+        children: [
+          Visibility(
+            visible: contact?.showTopAlphabetBar ?? false,
+            child: AlphabetTopBarView(
+              contactsCount: contact?.contactsCount ?? 0,
+              alphabet: contact?.alphabet ?? "",
+            ),
           ),
-        ),
-        SizedBox(
-          height: CONTACT_ITEM_VIEW_HEIGHT,
-          child: Row(
-            children: [
-              Padding(
-                padding:
-                const EdgeInsets.symmetric(horizontal: MARGIN_MEDIUM_3),
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                    contact?.profileUrl ?? "",
-                  ),
-                  radius: CONTACT_ITEM_PROFILE_RADIUS,
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.only(right: MARGIN_LARGE),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Spacer(),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            contact?.name ?? "",
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: TEXT_REGULAR_3X,
-                            ),
-                          ),
-                          const SizedBox(height: MARGIN_SMALL),
-                          Text(
-                            contact?.label ?? "",
-                            maxLines: 2,
-                            style: const TextStyle(
-                              overflow: TextOverflow.ellipsis,
-                              color: Colors.black26,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Spacer(),
-                      const HorizontalDividerView(),
-                    ],
+          SizedBox(
+            height: CONTACT_ITEM_VIEW_HEIGHT,
+            child: Row(
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: MARGIN_MEDIUM_3),
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(
+                      contact?.profileUrl ?? "",
+                    ),
+                    radius: CONTACT_ITEM_PROFILE_RADIUS,
                   ),
                 ),
-              )
-            ],
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.only(right: MARGIN_LARGE),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Spacer(),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              contact?.name ?? "",
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: TEXT_REGULAR_3X,
+                              ),
+                            ),
+                            const SizedBox(height: MARGIN_SMALL),
+                            Text(
+                              contact?.label ?? "",
+                              maxLines: 2,
+                              style: const TextStyle(
+                                overflow: TextOverflow.ellipsis,
+                                color: Colors.black26,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Spacer(),
+                        const HorizontalDividerView(),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

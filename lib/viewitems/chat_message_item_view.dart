@@ -9,7 +9,7 @@ import '../resources/dimens.dart';
 
 class ChatMessageItemView extends StatefulWidget {
   final bool isOwnMessage;
-  final MessageVO message;
+  final MessageVO? message;
 
   ChatMessageItemView({
     required this.isOwnMessage,
@@ -28,7 +28,7 @@ class _ChatMessageItemViewState extends State<ChatMessageItemView> {
     super.initState();
     _flickManager = FlickManager(
       videoPlayerController: VideoPlayerController.network(
-        widget.message.mediaUrl ?? "",
+        widget.message?.mediaUrl ?? "",
       ),
       autoPlay: false,
     );
@@ -47,22 +47,22 @@ class _ChatMessageItemViewState extends State<ChatMessageItemView> {
           children: [
             widget.isOwnMessage
                 ? Container()
-                : (widget.message.message?.isEmpty == true)
+                : (widget.message?.message?.isEmpty == true)
                   ? Row(
                   children: [
                     const SizedBox(width: MARGIN_MEDIUM),
                     CircleAvatar(
                       radius: MARGIN_MEDIUM_3,
                       backgroundImage: NetworkImage(
-                        widget.message.profileUrl ?? "",
+                        widget.message?.profileUrl ?? "",
                       ),
                     ),
                   ],
                 )
                   : const SizedBox(width: MARGIN_XXLARGE),
             Visibility(
-              visible: (widget.message.mediaUrl?.isNotEmpty == true),
-              child: (getUrlType(widget.message.mediaUrl ?? "") ==
+              visible: (widget.message?.mediaUrl?.isNotEmpty == true),
+              child: (getUrlType(widget.message?.mediaUrl ?? "") ==
                       UrlType.OTHER)
                   ? Container(
                       width: 200,
@@ -78,7 +78,7 @@ class _ChatMessageItemViewState extends State<ChatMessageItemView> {
                           MARGIN_MEDIUM,
                         ),
                         image: DecorationImage(
-                          image: NetworkImage(widget.message.mediaUrl ?? ""),
+                          image: NetworkImage(widget.message?.mediaUrl ?? ""),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -101,21 +101,21 @@ class _ChatMessageItemViewState extends State<ChatMessageItemView> {
             widget.isOwnMessage ? const Spacer() : Container(),
             Visibility(
               visible: (widget.isOwnMessage == false &&
-                  widget.message.message?.isNotEmpty == true),
+                  widget.message?.message?.isNotEmpty == true),
               child: Row(
                 children: [
                   const SizedBox(width: MARGIN_MEDIUM),
                   CircleAvatar(
                     radius: MARGIN_MEDIUM_3,
                     backgroundImage: NetworkImage(
-                      widget.message.profileUrl ?? "",
+                      widget.message?.profileUrl ?? "",
                     ),
                   ),
                 ],
               ),
             ),
             Visibility(
-              visible: (widget.message.message?.isNotEmpty == true),
+              visible: (widget.message?.message?.isNotEmpty == true),
               child: Container(
                 constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width * 0.7,
@@ -134,7 +134,7 @@ class _ChatMessageItemViewState extends State<ChatMessageItemView> {
                     vertical: MARGIN_CARD_MEDIUM_2,
                   ),
                   child: Text(
-                    widget.message.message ?? "",
+                    widget.message?.message ?? "",
                     textAlign: TextAlign.left,
                     style: const TextStyle(
                       fontSize: TEXT_REGULAR_2X,

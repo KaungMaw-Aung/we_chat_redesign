@@ -16,89 +16,173 @@ class DiscoverPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<DiscoverBloc>(
       create: (context) => DiscoverBloc(),
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: PRIMARY_COLOR,
-          title: const Text(
-            MOMENTS,
-            style: TextStyle(color: Colors.white70),
-          ),
-          centerTitle: true,
-          actions: [
-            Builder(
-              builder: (context) {
-                return IconButton(
-                  icon: const Icon(
-                    Icons.camera_alt_outlined,
-                    size: MARGIN_XLARGE,
-                  ),
-                  color: Colors.white70,
-                  onPressed: () {
-                    DiscoverBloc bloc = Provider.of(context, listen: false);
-                    navigateToScreen(
-                      context,
-                      AddOrEditMomentPage(
-                        username: bloc.profileData?.name ?? "",
-                        profileUrl: bloc.profileData?.profilePicture ?? "",
-                      ),
-                    );
-                  },
-                );
-              }
-            ),
-            const SizedBox(width: MARGIN_MEDIUM),
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Selector<DiscoverBloc, UserVO?>(
-                selector: (context, bloc) => bloc.profileData,
-                builder: (context, profile, child) {
-                  return MomentProfileView(profileData: profile);
-                },
+      child: Stack(
+        children: [
+          Scaffold(
+            appBar: AppBar(
+              backgroundColor: PRIMARY_COLOR,
+              title: const Text(
+                MOMENTS,
+                style: TextStyle(color: Colors.white70),
               ),
-              Selector<DiscoverBloc, List<MomentVO>?>(
-                selector: (context, bloc) => bloc.moments,
-                builder: (context, moments, child) {
-                  return ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: moments?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      return PostItemView(
-                        momentVO: moments?[index],
-                        onTapDelete: (momentId) {
-                          DiscoverBloc bloc =
-                              Provider.of(context, listen: false);
-                          bloc.deleteMoment(momentId);
-                        },
-                        onTapEdit: (momentId) {
-                          Future.delayed(const Duration(milliseconds: 1000))
-                              .then((value) {
-                            DiscoverBloc bloc = Provider.of(
-                              context,
-                              listen: false,
-                            );
-                            navigateToScreen(
-                              context,
-                              AddOrEditMomentPage(
-                                momentId: momentId,
-                                username: bloc.profileData?.name ?? "",
-                                profileUrl:
-                                    bloc.profileData?.profilePicture ?? "",
-                              ),
-                            );
-                          });
-                        },
+              centerTitle: true,
+              actions: [
+                Builder(builder: (context) {
+                  return IconButton(
+                    icon: const Icon(
+                      Icons.camera_alt_outlined,
+                      size: MARGIN_XLARGE,
+                    ),
+                    color: Colors.white70,
+                    onPressed: () {
+                      DiscoverBloc bloc = Provider.of(context, listen: false);
+                      navigateToScreen(
+                        context,
+                        AddOrEditMomentPage(
+                          username: bloc.profileData?.name ?? "",
+                          profileUrl: bloc.profileData?.profilePicture ?? "",
+                        ),
                       );
                     },
                   );
-                },
-              )
-            ],
+                }),
+                const SizedBox(width: MARGIN_MEDIUM),
+              ],
+            ),
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Selector<DiscoverBloc, UserVO?>(
+                    selector: (context, bloc) => bloc.profileData,
+                    builder: (context, profile, child) {
+                      return MomentProfileView(profileData: profile);
+                    },
+                  ),
+                  Selector<DiscoverBloc, List<MomentVO>?>(
+                    selector: (context, bloc) => bloc.moments,
+                    builder: (context, moments, child) {
+                      return ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: moments?.length ?? 0,
+                        itemBuilder: (context, index) {
+                          return PostItemView(
+                            momentVO: moments?[index],
+                            onTapDelete: (momentId) {
+                              DiscoverBloc bloc =
+                                  Provider.of(context, listen: false);
+                              bloc.deleteMoment(momentId);
+                            },
+                            onTapEdit: (momentId) {
+                              Future.delayed(const Duration(milliseconds: 1000))
+                                  .then((value) {
+                                DiscoverBloc bloc = Provider.of(
+                                  context,
+                                  listen: false,
+                                );
+                                navigateToScreen(
+                                  context,
+                                  AddOrEditMomentPage(
+                                    momentId: momentId,
+                                    username: bloc.profileData?.name ?? "",
+                                    profileUrl:
+                                        bloc.profileData?.profilePicture ?? "",
+                                  ),
+                                );
+                              });
+                            },
+                          );
+                        },
+                      );
+                    },
+                  )
+                ],
+              ),
+            ),
           ),
-        ),
+          Selector<DiscoverBloc, bool>(
+            selector: (context, bloc) => bloc.isCommandTextBoxOverlayShowing,
+            builder: (context, isCommandOverlayShowing, child) {
+              return Visibility(
+                visible: isCommandOverlayShowing,
+                child: Container(
+                  color: Colors.black87,
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    margin: const EdgeInsets.only(left: MARGIN_XXLARGE),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.chevron_right,
+                              color: TEXT_BOX_TOP_ICON_COLOR,
+                              size: MARGIN_XLARGE,
+                            ),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: MARGIN_MEDIUM_2,
+                                      bottom: MARGIN_MEDIUM,
+                                    ),
+                                    child: Container(
+                                      height: 0.5,
+                                      color: PRIMARY_COLOR,
+                                    ),
+                                  ),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          top: MARGIN_CARD_MEDIUM_2,
+                                        ),
+                                        child: Text(
+                                          "Alan Lu",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: TextField(
+                                          autofocus: true,
+                                          decoration: InputDecoration(
+                                            border: InputBorder.none,
+                                            filled: true,
+                                            fillColor: Colors.transparent,
+                                            suffixIcon: Icon(
+                                              Icons.emoji_emotions_outlined,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                          cursorColor: TEXT_BOX_TOP_ICON_COLOR,
+                                          style: TextStyle(
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

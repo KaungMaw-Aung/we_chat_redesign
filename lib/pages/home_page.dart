@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
+import 'package:we_chat_redesign/blocs/home_bloc.dart';
 import 'package:we_chat_redesign/data/vos/message_vo.dart';
-import 'package:we_chat_redesign/pages/conversation_page.dart';
 import 'package:we_chat_redesign/resources/colors.dart';
 import 'package:we_chat_redesign/resources/dimens.dart';
-import 'package:we_chat_redesign/utils/extensions.dart';
 
 import '../resources/strings.dart';
 import '../viewitems/chat_history_item_view.dart';
+import 'conversation_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -80,36 +80,62 @@ class _HomePageState extends State<HomePage> {
           SizedBox(width: MARGIN_MEDIUM),
         ],
       ),
-      body: ListView.separated(
-        itemCount: dummyChatHistory.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ChatHistoryItemView(
-            index: index,
-            messageVO: dummyChatHistory[index],
-            onTapDismiss: (index) {
-              setState(() {
-                dummyChatHistory.removeAt(index);
-              });
-            },
-            onTap: () => navigateToConversationPage(context),
-          );
-        },
-        separatorBuilder: (BuildContext context, int index) {
-          return Container(
-            height: 0.5,
-            color: Colors.black38,
-          );
-        },
+      body: ChangeNotifierProvider<HomeBloc>(
+        create: (context) => HomeBloc(),
+        child: Consumer<HomeBloc>(
+          builder: (context, bloc, child) {
+            print("Chat Histories ==> ${bloc.chatHistories?.length}");
+            return ListView.separated(
+              itemCount: bloc.chatHistories?.length ?? 0,
+              itemBuilder: (BuildContext context, int index) {
+                return ChatHistoryItemView(
+                  index: index,
+                  chatHistory: bloc.chatHistories?[index],
+                  onTapDelete: (receiverId, index) {
+                    bloc.deleteConversations(receiverId).then((_) {
+                      bloc.temp?.removeAt(index);
+                      bloc.chatHistories?.removeAt(index);
+                    });
+                  },
+                  onTap: () => navigateToConversationPage(
+                    context,
+                    bloc.getCurrentUid(),
+                    bloc.chatHistories?[index].uid ?? "",
+                    bloc.chatHistories?[index].name ?? "",
+                    bloc.chatHistories?[index].profileUrl ?? "",
+                  ),
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return Container(
+                  height: 0.5,
+                  color: Colors.black38,
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
 
-  void navigateToConversationPage(BuildContext context) {
-    /*Navigator.push(
+  void navigateToConversationPage(
+    BuildContext context,
+    String senderId,
+    String receiverId,
+    String receiverName,
+    String receiverProfileUrl,
+  ) {
+    Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ConversationPage(),),);*/
+      MaterialPageRoute(
+        builder: (context) => ConversationPage(
+          receiverId: receiverId,
+          receiverName: receiverName,
+          currentUserId: senderId,
+          receiverProfileUrl: receiverProfileUrl,
+        ),
+      ),
+    );
   }
-
 }
-
-

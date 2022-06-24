@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:we_chat_redesign/data/vos/chat_history_vo.dart';
 
 import '../data/vos/message_vo.dart';
 import '../resources/colors.dart';
@@ -7,14 +8,14 @@ import '../resources/dimens.dart';
 
 class ChatHistoryItemView extends StatelessWidget {
   final int index;
-  final MessageVO messageVO;
-  final Function(int) onTapDismiss;
+  final ChatHistoryVO? chatHistory;
+  final Function(String, int) onTapDelete;
   final Function onTap;
 
   ChatHistoryItemView({
     required this.index,
-    required this.messageVO,
-    required this.onTapDismiss,
+    required this.chatHistory,
+    required this.onTapDelete,
     required this.onTap,
   });
 
@@ -32,7 +33,7 @@ class ChatHistoryItemView extends StatelessWidget {
             icon: Icons.check_circle,
           ),
           SlidableAction(
-            onPressed: (context) => onTapDismiss(index),
+            onPressed: (context) => onTapDelete(chatHistory?.uid ?? "", index),
             backgroundColor: SLIDABLE_BACKGROUND_COLOR,
             foregroundColor: SLIDABLE_DISMISS_ICON_COLOR,
             icon: Icons.cancel,
@@ -48,12 +49,13 @@ class ChatHistoryItemView extends StatelessWidget {
               const SizedBox(width: MARGIN_MEDIUM_2),
               CircleAvatar(
                 backgroundImage: NetworkImage(
-                  messageVO.profileUrl ?? "",
+                  chatHistory?.profileUrl ?? "",
                 ),
                 radius: CHAT_HISTORY_ITEM_PROFILE_RADIUS,
               ),
               Expanded(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: MARGIN_MEDIUM),
                     Row(
@@ -62,7 +64,7 @@ class ChatHistoryItemView extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(top: MARGIN_MEDIUM),
                           child: Text(
-                            messageVO.username ?? "",
+                            chatHistory?.name ?? "",
                             style: const TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
@@ -71,9 +73,9 @@ class ChatHistoryItemView extends StatelessWidget {
                           ),
                         ),
                         const Spacer(),
-                        Text(
-                          messageVO.sentAt?.toString() ?? "",
-                          style: const TextStyle(
+                        const Text(
+                          "2:22",
+                          style: TextStyle(
                             color: Colors.black26,
                             fontSize: TEXT_REGULAR,
                           ),
@@ -86,7 +88,7 @@ class ChatHistoryItemView extends StatelessWidget {
                       padding:
                       const EdgeInsets.symmetric(horizontal: MARGIN_MEDIUM),
                       child: Text(
-                        messageVO.message ?? "",
+                        chatHistory?.lastMessage ?? "",
                         maxLines: 2,
                         style: const TextStyle(
                           overflow: TextOverflow.ellipsis,

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:we_chat_redesign/data/vos/message_vo.dart';
 import 'package:we_chat_redesign/data/vos/user_vo.dart';
 
+import '../vos/chat_history_vo.dart';
 import '../vos/moment_vo.dart';
 
 abstract class WeChatModel {
@@ -37,4 +38,8 @@ abstract class WeChatModel {
   );
 
   Stream<List<MessageVO>> getMessages(String senderId, String receiverId);
+
+  Stream<List<Future<ChatHistoryVO>>> getChatHistories(String senderId);
+
+  Future<void> deleteConversation(String senderId, String receiverId);
 }

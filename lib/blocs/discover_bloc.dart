@@ -10,6 +10,7 @@ class DiscoverBloc extends ChangeNotifier {
   List<MomentVO>? moments;
   bool isDisposed = false;
   UserVO? profileData;
+  bool isCommandTextBoxOverlayShowing = true;
 
   /// Models
   final WeChatModel _model = WeChatModelImpl();
@@ -33,6 +34,16 @@ class DiscoverBloc extends ChangeNotifier {
 
   void deleteMoment(String momentId) {
     _model.deleteMoment(momentId);
+  }
+
+  void showCommandTextBoxOverlay() {
+    isCommandTextBoxOverlayShowing = true;
+    safelyNotifyListeners();
+  }
+
+  void hideCommandTextBoxOverlay() {
+    isCommandTextBoxOverlayShowing = false;
+    safelyNotifyListeners();
   }
 
   void safelyNotifyListeners() {

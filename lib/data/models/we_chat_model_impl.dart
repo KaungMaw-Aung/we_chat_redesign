@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:we_chat_redesign/data/models/we_chat_model.dart';
+import 'package:we_chat_redesign/data/vos/chat_history_vo.dart';
 import 'package:we_chat_redesign/data/vos/message_vo.dart';
 import 'package:we_chat_redesign/data/vos/moment_vo.dart';
 import 'package:we_chat_redesign/data/vos/user_vo.dart';
@@ -147,5 +148,15 @@ class WeChatModelImpl extends WeChatModel {
   @override
   Stream<List<MessageVO>> getMessages(String senderId, String receiverId) {
     return _messageDataAgent.getMessages(senderId, receiverId);
+  }
+
+  @override
+  Stream<List<Future<ChatHistoryVO>>> getChatHistories(String senderId) {
+    return _messageDataAgent.getChatHistories(senderId);
+  }
+
+  @override
+  Future<void> deleteConversation(String senderId, String receiverId) {
+    return _messageDataAgent.deleteConversation(senderId, receiverId);
   }
 }
